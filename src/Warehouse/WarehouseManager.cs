@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Compradon.Warehouse
 {
@@ -67,6 +68,7 @@ namespace Compradon.Warehouse
         /// </summary>
         public WarehouseManager(
             IEntityStore<TKey> store,
+            IOptions<WarehouseOptions> options,
             IEnumerable<IEntityValidator<TKey>> validators,
             ILogger<WarehouseManager<TKey>> logger,
             WarehouseErrorDescriber errorDescriber = null)
@@ -74,6 +76,7 @@ namespace Compradon.Warehouse
             if (store == null) throw new ArgumentNullException(nameof(store));
 
             Store = store;
+            Options = options?.Value ?? new WarehouseOptions();
             Validators = validators;
             ErrorDescriber = errorDescriber ?? new WarehouseErrorDescriber();
         }
