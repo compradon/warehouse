@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Compradon.Warehouse
 {
@@ -45,6 +46,14 @@ namespace Compradon.Warehouse
         public WarehouseErrorDescriber ErrorDescriber { get; }
 
         /// <summary>
+        /// The <see cref="ILogger"/> used to log messages from the manager.
+        /// </summary>
+        /// <value>
+        /// The <see cref="ILogger"/> used to log messages from the manager.
+        /// </value>
+        public virtual ILogger Logger { get; set; }
+
+        /// <summary>
         /// The cancellation token used to cancel operations.
         /// </summary>
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
@@ -59,6 +68,7 @@ namespace Compradon.Warehouse
         public WarehouseManager(
             IEntityStore<TKey> store,
             IEnumerable<IEntityValidator<TKey>> validators,
+            ILogger<WarehouseManager<TKey>> logger,
             WarehouseErrorDescriber errorDescriber = null)
         {
             if (store == null) throw new ArgumentNullException(nameof(store));
