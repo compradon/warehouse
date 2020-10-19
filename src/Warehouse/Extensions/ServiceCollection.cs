@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions().AddLogging();
 
             // Services used by warehouse system
-            services.TryAddScoped<WarehouseManager>();
+            services.TryAddScoped<WarehouseManager<Guid>>();
 
             return new WarehouseBuilder(typeof(Guid), services);
         }
