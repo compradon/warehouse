@@ -14,6 +14,9 @@ namespace Application
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddWarehouse();
+
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -27,10 +30,7 @@ namespace Application
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapDefaultControllerRoute();
             });
         }
     }

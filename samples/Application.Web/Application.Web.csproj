@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Warehouse\Warehouse.csproj" />
+    <ProjectReference Include="..\..\src\Warehouse.Abstractions\Warehouse.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
