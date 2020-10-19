@@ -118,6 +118,21 @@ namespace Compradon.Warehouse
         }
 
         /// <summary>
+        /// Finds and returns an entity, if any, who has the specified <paramref name="entityId"/>.
+        /// </summary>
+        /// <param name="entityId">The entity ID to search for.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
+        /// </returns>
+        public virtual async Task<WarehouseResult<TEntity>> FindAsync<TEntity>(TKey entityId)
+            where TEntity : IEntity<TKey>
+        {
+            ThrowIfDisposed();
+
+            return await Store.FindAsync<TEntity>(entityId, CancellationToken);
+        }
+
+        /// <summary>
         /// Updates the specified <paramref name="entity"/> in the backing store.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
