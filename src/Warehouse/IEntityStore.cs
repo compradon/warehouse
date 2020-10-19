@@ -44,14 +44,14 @@ namespace Compradon.Warehouse
         Task<WarehouseResult> DeleteAsync(TKey entityId, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Gets a entity, if any, who has the specified <paramref name="entityId"/>.
+        /// Finds and returns a entity, if any, who has the specified <paramref name="entityId"/>.
         /// </summary>
         /// <param name="entityId">The entity ID to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the user matching the specified <paramref name="entityId"/> if it exists.
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<TEntity>> GetAsync<TEntity>(TKey entityId, CancellationToken cancellationToken)
+        Task<WarehouseResult<TEntity>> FindAsync<TEntity>(TKey entityId, CancellationToken cancellationToken)
             where TEntity : IEntity<TKey>;
 
         /// <summary>
