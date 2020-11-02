@@ -24,6 +24,6 @@ namespace Compradon.Warehouse
         /// <param name="manager">The <see cref="WarehouseManager{TKey}"/> managing the entity store.</param>
         /// <param name="entity">The entity to validate.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="WarehouseResult"/> of the asynchronous validation.</returns>
-        Task<WarehouseResult> ValidateAsync(WarehouseManager<TKey> manager, IEntity<TKey> entity);
+        Task<WarehouseResult> ValidateAsync(WarehouseManager<TKey> manager, Entity<TKey> entity);
     }
 }

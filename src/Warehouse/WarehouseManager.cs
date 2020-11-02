@@ -30,7 +30,9 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
-        /// <value>The persistence store the manager operates over.</value>
+        /// <value>
+        /// The persistence store the manager operates over.
+        /// </value>
         protected internal IEntityStore<TKey> Store { get; }
 
         /// <summary>
@@ -92,7 +94,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> CreateAsync(IEntity<TKey> entity)
+        public virtual async Task<WarehouseResult> CreateAsync(Entity<TKey> entity)
         {
             ThrowIfDisposed();
 
@@ -108,7 +110,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual Task<WarehouseResult> DeleteAsync(IEntity<TKey> entity)
+        public virtual Task<WarehouseResult> DeleteAsync(Entity<TKey> entity)
         {
             ThrowIfDisposed();
 
@@ -125,7 +127,7 @@ namespace Compradon.Warehouse
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
         public virtual async Task<WarehouseResult<TEntity>> FindAsync<TEntity>(TKey entityId)
-            where TEntity : IEntity<TKey>
+            where TEntity : Entity<TKey>
         {
             ThrowIfDisposed();
 
@@ -139,7 +141,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> UpdateAsync(IEntity<TKey> entity)
+        public virtual async Task<WarehouseResult> UpdateAsync(Entity<TKey> entity)
         {
             ThrowIfDisposed();
 
@@ -155,7 +157,7 @@ namespace Compradon.Warehouse
         /// </summary>
         /// <param name="entity">The entity</param>
         /// <returns>A <see cref="WarehouseResult"/> representing whether validation was successful.</returns>
-        protected async Task<WarehouseResult> ValidateAsync(IEntity<TKey> entity)
+        protected async Task<WarehouseResult> ValidateAsync(Entity<TKey> entity)
         {
             var errors = new List<WarehouseError>();
 

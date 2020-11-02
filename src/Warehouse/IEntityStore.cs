@@ -25,7 +25,7 @@ namespace Compradon.Warehouse
         /// <param name="entity">The entity to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the creation operation.</returns>
-        Task<WarehouseResult> CreateAsync(IEntity<TKey> entity, CancellationToken cancellationToken);
+        Task<WarehouseResult> CreateAsync(Entity<TKey> entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes the specified <paramref name="entity"/> from the entity store.
@@ -33,7 +33,7 @@ namespace Compradon.Warehouse
         /// <param name="entity">The entity to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the update operation.</returns>
-        Task<WarehouseResult> DeleteAsync(IEntity<TKey> entity, CancellationToken cancellationToken);
+        Task<WarehouseResult> DeleteAsync(Entity<TKey> entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Deletes the specified entity by <paramref name="entityId"/> from the entity store.
@@ -52,7 +52,7 @@ namespace Compradon.Warehouse
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
         Task<WarehouseResult<TEntity>> FindAsync<TEntity>(TKey entityId, CancellationToken cancellationToken)
-            where TEntity : IEntity<TKey>;
+            where TEntity : Entity<TKey>;
 
         /// <summary>
         /// Updates the specified <paramref name="entity"/> in the entity store.
@@ -60,6 +60,6 @@ namespace Compradon.Warehouse
         /// <param name="entity">The entity to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the update operation.</returns>
-        Task<WarehouseResult> UpdateAsync(IEntity<TKey> entity, CancellationToken cancellationToken);
+        Task<WarehouseResult> UpdateAsync(Entity<TKey> entity, CancellationToken cancellationToken);
     }
 }
