@@ -39,6 +39,12 @@ namespace Compradon.Warehouse
         public DateTimeOffset CreationDate { get; protected set; }
 
         /// <summary>
+        /// Represents a point in time when an entity was updation, typically
+        /// expressed as a date and time of day, relative to Coordinated Universal Time (UTC).
+        /// </summary>
+        public DateTimeOffset UpdationDate { get; protected set; }
+
+        /// <summary>
         /// Represents a point in time when an entity was deletion, typically
         /// expressed as a date and time of day, relative to Coordinated Universal Time (UTC).
         /// </summary>
