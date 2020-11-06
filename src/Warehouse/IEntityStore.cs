@@ -20,28 +20,21 @@ namespace Compradon.Warehouse
         where TKey : IEquatable<TKey>
     {
         /// <summary>
-        /// Creates the specified <paramref name="entity"/> in the entity store.
-        /// </summary>
-        /// <param name="entity">The entity to create.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the creation operation.</returns>
-        Task<WarehouseResult> CreateAsync(Entity<TKey> entity, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Deletes the specified <paramref name="entity"/> from the entity store.
-        /// </summary>
-        /// <param name="entity">The entity to delete.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the update operation.</returns>
-        Task<WarehouseResult> DeleteAsync(Entity<TKey> entity, CancellationToken cancellationToken);
-
-        /// <summary>
         /// Deletes the specified entity by <paramref name="entityId"/> from the entity store.
         /// </summary>
         /// <param name="entityId">The entity key to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the update operation.</returns>
         Task<WarehouseResult> DeleteAsync(TKey entityId, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Finds and returns an entities, if any, who has the specified conditions.
+        /// </summary>
+        /// <typeparam name="TEntity">The entities type to search for.</typeparam>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the find operation.</returns>
+        Task<WarehouseResult<WarehousePagination<TEntity>>> FindAsync<TEntity>(CancellationToken cancellationToken)
+            where TEntity : Entity<TKey>;
 
         /// <summary>
         /// Finds and returns a entity, if any, who has the specified <paramref name="entityId"/>.
@@ -51,15 +44,15 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<TEntity>> FindAsync<TEntity>(TKey entityId, CancellationToken cancellationToken)
+        Task<WarehouseResult<TEntity>> FindByIdAsync<TEntity>(TKey entityId, CancellationToken cancellationToken)
             where TEntity : Entity<TKey>;
 
         /// <summary>
-        /// Updates the specified <paramref name="entity"/> in the entity store.
+        /// Save the specified <paramref name="entity"/> in the entity store.
         /// </summary>
-        /// <param name="entity">The entity to update.</param>
+        /// <param name="entity">The entity to save.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the update operation.</returns>
-        Task<WarehouseResult> UpdateAsync(Entity<TKey> entity, CancellationToken cancellationToken);
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
+        Task<WarehouseResult> SaveAsync(Entity<TKey> entity, CancellationToken cancellationToken);
     }
 }

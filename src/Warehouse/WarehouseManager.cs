@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,25 @@ using Microsoft.Extensions.Options;
 
 namespace Compradon.Warehouse
 {
+    /// <summary>
+    /// Provides the APIs for managing entity in a persistence store.
+    /// </summary>
+    public class WarehouseManager : WarehouseManager<Guid>
+    {
+        /// <summary>
+        /// Constructs a new instance of <see cref="WarehouseManager"/>.
+        /// </summary>
+        public WarehouseManager(
+            IEntityStore<Guid> store,
+            IOptions<WarehouseOptions> options,
+            IEnumerable<IEntityValidator<Guid>> validators,
+            ILogger<WarehouseManager<Guid>> logger,
+            WarehouseErrorDescriber errorDescriber = null) : base(store, options, validators, logger, errorDescriber)
+        {
+
+        }
+    }
+
     /// <summary>
     /// Provides the APIs for managing entity in a persistence store.
     /// </summary>
@@ -86,22 +106,6 @@ namespace Compradon.Warehouse
         #endregion
 
         #region Methods
-        
-        /// <summary>
-        /// Creates the specified <paramref name="entity"/> in the backing store, as an asynchronous operation.
-        /// </summary>
-        /// <param name="entity">The entity to create.</param>
-        /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
-        /// </returns>
-        public virtual async Task<WarehouseResult> CreateAsync(Entity<TKey> entity)
-        {
-            ThrowIfDisposed();
-
-            var result = await ValidateAsync(entity);
-
-            return result.Succeeded ? await Store.CreateAsync(entity, CancellationToken) : result;
-        }
 
         /// <summary>
         /// Deletes the specified <paramref name="entity"/> from the backing store.
@@ -110,38 +114,90 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual Task<WarehouseResult> DeleteAsync(Entity<TKey> entity)
+        public virtual async Task<WarehouseResult> DeleteAsync(Entity<TKey> entity)
         {
             ThrowIfDisposed();
 
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            return Store.DeleteAsync(entity, CancellationToken);
+            return await DeleteAsync(entity.Key);
+        }
+
+        /// <summary>
+        /// Deletes the specified <paramref name="entityId"/> from the backing store.
+        /// </summary>
+        /// <param name="entityId">The entity to delete.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
+        /// </returns>
+        public virtual async Task<WarehouseResult> DeleteAsync(TKey entityId)
+        {
+            ThrowIfDisposed();
+
+            if (entityId == null) throw new ArgumentNullException(nameof(entityId));
+
+            return await Store.DeleteAsync(entityId, CancellationToken);
+        }
+
+        /// <summary>
+        /// Finds and returns an entities, if any, who has the specified conditions.
+        /// </summary>
+        /// <typeparam name="TEntity">The entities type to search for.</typeparam>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
+        public virtual async Task<WarehousePagination<TEntity>> FindAsync<TEntity>()
+            where TEntity : Entity<TKey>
+        {
+            ThrowIfDisposed();
+
+            var result = await Store.FindAsync<TEntity>(CancellationToken);
+
+            if (result.Succeeded) return result.Value;
+            if (result.Exception != null) throw result.Exception;
+
+            return null;
         }
 
         /// <summary>
         /// Finds and returns an entity, if any, who has the specified <paramref name="entityId"/>.
         /// </summary>
+        /// <typeparam name="TEntity">The entity type to search for.</typeparam>
         /// <param name="entityId">The entity ID to search for.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseResult<TEntity>> FindAsync<TEntity>(TKey entityId)
+        public virtual async Task<TEntity> FindByIdAsync<TEntity>(TKey entityId)
             where TEntity : Entity<TKey>
         {
             ThrowIfDisposed();
 
-            return await Store.FindAsync<TEntity>(entityId, CancellationToken);
+            var result = await Store.FindByIdAsync<TEntity>(entityId, CancellationToken);
+
+            if (result.Succeeded) return result.Value;
+            if (result.Exception != null) throw result.Exception;
+
+            return null;
+        }
+
+        /// CreateInstance
+        /// <summary>
+        /// Creates an instance of the entity type designated by the specified entity type parameter, using the parameterless constructor.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of entity to create.</typeparam>
+        public virtual Task<TEntity> NewAsync<TEntity>()
+        {
+            var entity = Activator.CreateInstance<TEntity>();
+
+            return Task.FromResult<TEntity>(entity);
         }
 
         /// <summary>
-        /// Updates the specified <paramref name="entity"/> in the backing store.
+        /// Save the specified <paramref name="entity"/> in the backing store.
         /// </summary>
-        /// <param name="entity">The entity to update.</param>
+        /// <param name="entity">The entity to save.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> UpdateAsync(Entity<TKey> entity)
+        public virtual async Task<WarehouseResult> SaveAsync(Entity<TKey> entity)
         {
             ThrowIfDisposed();
 
@@ -149,7 +205,7 @@ namespace Compradon.Warehouse
             
             var result = await ValidateAsync(entity);
 
-            return result.Succeeded ? await Store.UpdateAsync(entity, CancellationToken) : result;
+            return result.Succeeded ? await Store.SaveAsync(entity, CancellationToken) : result;
         }
 
         /// <summary>
