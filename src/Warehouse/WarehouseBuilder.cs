@@ -39,5 +39,28 @@ namespace Compradon.Warehouse
         }
 
         #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Adds an <see cref="WarehouseErrorDescriber"/>.
+        /// </summary>
+        /// <typeparam name="TDescriber">The type of the error describer.</typeparam>
+        /// <returns>The current <see cref="WarehouseBuilder"/> instance.</returns>
+        public virtual WarehouseBuilder AddErrorDescriber<TDescriber>() where TDescriber : WarehouseErrorDescriber
+            => AddScoped(typeof(WarehouseErrorDescriber), typeof(TDescriber));
+
+        #endregion
+
+        #region Helpers
+
+        private WarehouseBuilder AddScoped(Type serviceType, Type concreteType)
+        {
+            Services.AddScoped(serviceType, concreteType);
+
+            return this;
+        }
+
+        #endregion
     }
 }
