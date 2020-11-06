@@ -33,6 +33,11 @@ namespace Compradon.Warehouse
         public TKey Key { get; protected set; }
 
         /// <summary>
+        /// Gets a flag indicating that the entity is read-only.
+        /// </summary>
+        public bool IsReadOnly { get; private set; }
+
+        /// <summary>
         /// Represents a point in time when an entity was creation, typically
         /// expressed as a date and time of day, relative to Coordinated Universal Time (UTC).
         /// </summary>
