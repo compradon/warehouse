@@ -6,135 +6,160 @@ namespace Compradon.Warehouse.Test
     public class WarehousePaginationTest
     {
         [Fact]
-        public void Constructor_SingleItemsNull_ThrowsArgumentNullException()
+        public void Constructor_WithNullPageItems_ThrowsArgumentNullException()
         {
-            Action actual = () => new WarehousePagination<string>(null);
+            string[] items = null;
+
+            Action actual = () => new WarehousePagination<string>(items: items, count: 0, size: 10, page: 1);
+
             Assert.Throws<ArgumentNullException>(actual);
         }
 
         [Fact]
-        public void Constructor_SingleItems_CollectionEmpty()
+        public void Constructor_WithEmptyPageItems_ReturnsEmptyCollection()
         {
-            var values = new WarehousePagination<string>(new string[] { });
+            string[] items = new string[] { };
+
+            var values = new WarehousePagination<string>(items: items, count: 0, size: 10, page: 1);
 
             Assert.Empty(values);
         }
 
         [Fact]
-        public void Constructor_Single_CollectionNotEmpty()
+        public void Constructor_WithPageItems_ReturnsNotEmptyCollection()
         {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" });
+            string[] items = new string[] { "one", "two", "three" };
+
+            var values = new WarehousePagination<string>(items: items, count: items.Length, size: 10, page: 1);
 
             Assert.NotEmpty(values);
         }
 
         [Fact]
-        public void Constructor_Single_AssignsPageNumberProperty()
+        public void Constructor_PageItemsMoreThanCount_ThrowsArgumentOutOfRangeException()
         {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" });
+            string[] items = new string[] { "one", "two", "three" };
 
-            var expected = 1;
-            var actual = values.PageNumber;
+            Action actual = () => new WarehousePagination<string>(items: items, count: 1, size: 10, page: 1);
+            Assert.Throws<ArgumentOutOfRangeException>(actual);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void Constructor_PageSizeIncorrect_ThrowsArgumentOutOfRangeException(int size)
+        {
+            string[] items = new string[] { "one", "two", "three" };
+
+            Action actual = () => new WarehousePagination<string>(items: items, count: items.Length, size: size, page: 1);
+            Assert.Throws<ArgumentOutOfRangeException>(actual);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void Constructor_PageNumberIncorrect_ThrowsArgumentOutOfRangeException(int page)
+        {
+            string[] items = new string[] { "one", "two", "three" };
+
+            Action actual = () => new WarehousePagination<string>(items: items, count: items.Length, size: 3, page: page);
+            Assert.Throws<ArgumentOutOfRangeException>(actual);
+        }
+
+        [Fact]
+        public void Constructor_PageItemsMoreThanPageSize_ThrowsArgumentOutOfRangeException()
+        {
+            string[] items = new string[] { "one", "two", "three" };
+
+            Action actual = () => new WarehousePagination<string>(items: items, count: items.Length, size: 1, page: 1);
+            Assert.Throws<ArgumentOutOfRangeException>(actual);
+        }
+
+        [Fact]
+        public void Constructor_PageNumberMoreThanTotalPages_ThrowsArgumentOutOfRangeException()
+        {
+            string[] items = new string[] { "one", "two", "three" };
+
+            Action actual = () => new WarehousePagination<string>(items: items, count: 9, size: 3, page: 4);
+            Assert.Throws<ArgumentOutOfRangeException>(actual);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public void PageNumber_Property_ReturnsCorrectValue(int page)
+        {
+            string[] items = new string[] { "one", "two", "three" };
+
+            var values = new WarehousePagination<string>(items: items, count: 9, size: 3, page: page);
+
+            var expected = page;
+            var actual = values.Page;
 
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Constructor_Single_AssignsPageSizeProperty()
+        [Theory]
+        [InlineData(3)]
+        [InlineData(5)]
+        [InlineData(10)]
+        public void PageSize_Property_ReturnsCorrectValue(int size)
         {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" });
+            string[] items = new string[] { "one", "two", "three" };
 
-            var expected = int.MaxValue;
-            var actual = values.PageSize;
+            var values = new WarehousePagination<string>(items: items, count: items.Length, size: size, page: 1);
+
+            var expected = size;
+            var actual = values.Size;
 
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Constructor_Single_AssignsTotalPagesProperty()
+        [Theory]
+        [InlineData(3)]
+        [InlineData(6)]
+        [InlineData(9)]
+        public void TotalPages_Property_ReturnsCorrectValue(int count)
         {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" });
+            string[] items = new string[] { "one", "two", "three" };
 
-            var expected = 1;
-            var actual = values.TotalPages;
+            var values = new WarehousePagination<string>(items: items, count: count, size: 3, page: 1);
+
+            var expected = count / 3;
+            var actual = values.Pages;
 
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Constructor_Single_AssignsCountProperty()
+        [Theory]
+        [InlineData(3)]
+        [InlineData(6)]
+        [InlineData(9)]
+        public void Count_Property_ReturnsCorrectValue(int count)
         {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" });
+            string[] items = new string[] { "one", "two", "three" };
 
-            var expected = 3;
+            var values = new WarehousePagination<string>(items: items, count: count, size: 3, page: 1);
+
+            var expected = count;
             var actual = values.Count;
 
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Constructor_Full_ThrowsArgumentNullException()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Item_GetByIndex_ReturnsCorrectValue(int index)
         {
-            Action actual = () => new WarehousePagination<string>(null, 0, 10, 1);
-            Assert.Throws<ArgumentNullException>(actual);
-        }
+            string[] items = new string[] { "one", "two", "three" };
 
-        [Fact]
-        public void Constructor_Full_CollectionEmpty()
-        {
-            var values = new WarehousePagination<string>(new string[] { }, 0, 10, 1);
+            var values = new WarehousePagination<string>(items: items, count: items.Length, size: 3, page: 1);
 
-            Assert.Empty(values);
-        }
-
-        [Fact]
-        public void Constructor_Full_CollectionNotEmpty()
-        {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" }, 3, 10, 1);
-
-            Assert.NotEmpty(values);
-        }
-
-        [Fact]
-        public void Constructor_Full_AssignsPageNumberProperty()
-        {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" }, 3, 10, 1);
-
-            var expected = 1;
-            var actual = values.PageNumber;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Constructor_Full_AssignsPageSizeProperty()
-        {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" }, 3, 10, 1);
-
-            var expected = 10;
-            var actual = values.PageSize;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Constructor_Full_AssignsTotalPagesProperty()
-        {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" }, 3, 10, 1);
-
-            var expected = 1;
-            var actual = values.TotalPages;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Constructor_Full_AssignsCountProperty()
-        {
-            var values = new WarehousePagination<string>(new string[] { "one", "two", "three" }, 3, 10, 1);
-
-            var expected = 3;
-            var actual = values.Count;
+            var expected = items[index];
+            var actual = values[index];
 
             Assert.Equal(expected, actual);
         }

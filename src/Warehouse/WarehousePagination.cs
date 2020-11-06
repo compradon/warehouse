@@ -26,61 +26,54 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets the page number of the collection.
         /// </summary>
-        public int PageNumber { get; }
+        public int Page { get; }
 
         /// <summary>
         /// Gets the page size of the collection.
         /// </summary>
-        public int PageSize { get; }
+        public int Size { get; }
 
         /// <summary>
         /// Gets the total number of pages in the collection.
         /// </summary>
-        public int TotalPages { get { return PageSize == int.MaxValue ? 1 : (Count + PageSize - 1) / PageSize; } }
+        public int Pages { get { return Size == int.MaxValue || Count == 0 ? 1 : (Count + Size - 1) / Size; } }
 
         /// <summary>
         /// Gets a value indicating whether the has previous page in the collection.
         /// </summary>
-        public bool HasPreviousPage => PageNumber > 1;
+        public bool HasPrevious => Page > 1;
 
         /// <summary>
         /// Gets a value indicating whether the has next page in the collection.
         /// </summary>
-        public bool HasNextPage => PageNumber < TotalPages;
+        public bool HasNext => Page < Pages;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructs a new instance of <see cref="WarehousePagination{T}"/> without information about paging.
-        /// </summary>
-        /// <param name="pageItems">Collection of elements on the page.</param>
-        public WarehousePagination(T[] pageItems) : this(pageItems, pageItems?.Length ?? 0, int.MaxValue, 1)
-        {
-
-        }
-
-        /// <summary>
         /// Constructs a new instance of <see cref="WarehousePagination{T}"/> with information about paging.
         /// </summary>
-        /// <param name="pageItems">Collection of elements on the page.</param>
+        /// <param name="items">Collection of elements on the page.</param>
         /// <param name="count">The number of elements in the collection.</param>
-        /// <param name="pageSize">The page size of the collection.</param>
-        /// <param name="pageNumber">The page number of the collection.</param>
-        public WarehousePagination(T[] pageItems, int count, int pageSize, int pageNumber)
+        /// <param name="size">The page size of the collection.</param>
+        /// <param name="page">The page number of the collection.</param>
+        public WarehousePagination(T[] items, int count, int size, int page)
         {
-            if (pageItems == null) throw new ArgumentNullException(nameof(pageItems));
-            if (pageSize < 1) throw new ArgumentException("{0}", nameof(pageSize));
+            if (items == null) throw new ArgumentNullException("{0}", nameof(items));
+            if (size < 1) throw new ArgumentOutOfRangeException("{0}", nameof(size));
+            if (page < 1) throw new ArgumentOutOfRangeException("{0}", nameof(page));
+            if (items.Length > size) throw new ArgumentOutOfRangeException("{0}", nameof(items));
+            if (items.Length > count) throw new ArgumentOutOfRangeException("{0}", nameof(items));
 
-            _items = pageItems;
+            _items = items;
 
             Count = count;
-            PageSize = pageSize;
-            PageNumber = pageNumber;
+            Size = size;
+            Page = page;
 
-            if (PageNumber > TotalPages) throw new ArgumentException("{0}", nameof(pageNumber));
-            if (_items.Count < count) throw new ArgumentException("{0}", nameof(count));
+            if (page > Pages) throw new ArgumentOutOfRangeException("{0}", nameof(page));
         }
 
         #endregion
