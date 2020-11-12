@@ -33,7 +33,7 @@ namespace Compradon.Warehouse
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
-        Task<WarehouseResult<IEnumerable<EntityType<TKey>>>> GetAllAsync(CancellationToken cancellationToken);
+        Task<WarehouseResult<IEnumerable<WarehouseType<TKey>>>> GetAllAsync(CancellationToken cancellationToken);
         
         /// <summary>
         /// Finds and returns an entity type, if any, who has the specified <paramref name="typeKey"/>.
@@ -43,8 +43,8 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="typeKey"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<EntityType<TKey>>> GetAsync(TKey typeKey, CancellationToken cancellationToken);
-        
+        Task<WarehouseResult<WarehouseType<TKey>>> GetAsync(TKey typeKey, CancellationToken cancellationToken);
+
         /// <summary>
         /// Finds and returns an entity type, if any, who has the specified <paramref name="alias"/>.
         /// </summary>
@@ -53,8 +53,8 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="alias"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<EntityType<TKey>>> FindByAliasAsync(string alias, CancellationToken cancellationToken);
-        
+        Task<WarehouseResult<WarehouseType<TKey>>> FindByAliasAsync(string alias, CancellationToken cancellationToken);
+
         /// <summary>
         /// Finds and returns an entity type, if any, who has the specified <paramref name="className"/>.
         /// </summary>
@@ -63,7 +63,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="className"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<EntityType<TKey>>> FindByTypeAsync(string className, CancellationToken cancellationToken);
+        Task<WarehouseResult<WarehouseType<TKey>>> FindByTypeAsync(string className, CancellationToken cancellationToken);
 
         /// <summary>
         /// Save the specified <paramref name="entityType"/> in the backing store.
@@ -71,6 +71,6 @@ namespace Compradon.Warehouse
         /// <param name="entityType">The entity type to save.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
-        Task<WarehouseResult> SaveAsync(EntityType<TKey> entityType, CancellationToken cancellationToken);
+        Task<WarehouseResult> SaveAsync(WarehouseType<TKey> entityType, CancellationToken cancellationToken);
     }
 }

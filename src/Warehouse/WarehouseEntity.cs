@@ -5,15 +5,15 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides an abstraction of entity which uses a GUID as a primary key in the warehouse system.
     /// </summary>
-    public abstract class Entity : Entity<Guid>
+    public abstract class WarehouseEntity : WarehouseEntity<Guid>
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="Entity"/>.
+        /// Initializes a new instance of <see cref="WarehouseEntity"/>.
         /// </summary>
         /// <remarks>
         /// The Key property is initialized to form a new GUID value.
         /// </remarks>
-        public Entity()
+        public WarehouseEntity()
         {
             Key = Guid.NewGuid();
             CreationDate = DateTime.Now;
@@ -24,7 +24,7 @@ namespace Compradon.Warehouse
     /// Provides an abstraction of entity in the warehouse system.
     /// </summary>
     /// <typeparam name="TKey">The type used for the primary key for the entity.</typeparam>
-    public abstract class Entity<TKey>
+    public abstract class WarehouseEntity<TKey>
         where TKey : IEquatable<TKey>
     {
         /// <summary>

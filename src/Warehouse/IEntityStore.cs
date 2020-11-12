@@ -34,7 +34,7 @@ namespace Compradon.Warehouse
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the find operation.</returns>
         Task<WarehouseResult<WarehousePagination<TEntity>>> FindAsync<TEntity>(CancellationToken cancellationToken)
-            where TEntity : Entity<TKey>;
+            where TEntity : WarehouseEntity<TKey>;
 
         /// <summary>
         /// Finds and returns a entity, if any, who has the specified <paramref name="entityId"/>.
@@ -45,7 +45,7 @@ namespace Compradon.Warehouse
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
         Task<WarehouseResult<TEntity>> FindByIdAsync<TEntity>(TKey entityId, CancellationToken cancellationToken)
-            where TEntity : Entity<TKey>;
+            where TEntity : WarehouseEntity<TKey>;
 
         /// <summary>
         /// Save the specified <paramref name="entity"/> in the entity store.
@@ -53,6 +53,6 @@ namespace Compradon.Warehouse
         /// <param name="entity">The entity to save.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
-        Task<WarehouseResult> SaveAsync(Entity<TKey> entity, CancellationToken cancellationToken);
+        Task<WarehouseResult> SaveAsync(WarehouseEntity<TKey> entity, CancellationToken cancellationToken);
     }
 }

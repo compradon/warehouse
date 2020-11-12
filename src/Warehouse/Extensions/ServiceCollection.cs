@@ -12,15 +12,34 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds and configures the warehouse system for the specified entity types which uses a GUID as a primary key.
         /// </summary>
+        /// <param name="services">The services available in the application.</param>
         public static WarehouseBuilder AddWarehouse(this IServiceCollection services)
+            => services.AddWarehouse(null);
+
+        /// <summary>
+        /// Adds and configures the warehouse system for the specified entity types which uses a GUID as a primary key.
+        /// </summary>
+        /// <param name="services">The services available in the application.</param>
+        /// <param name="setupAction">An action to configure the <see cref="WarehouseOptions"/>.</param>
+        public static WarehouseBuilder AddWarehouse(this IServiceCollection services, Action<WarehouseOptions> setupAction)
         {
             services.AddOptions().AddLogging();
 
-            // Services used by warehouse system
-            services.TryAddScoped<WarehouseManager<Guid>>();
+            // Services used by warehouse
+
+            // Warehouse services
+            services.TryAddScoped<WarehouseErrorDescriber>();
+            services.TryAddScoped<DictionaryManager>();
+            services.TryAddScoped<WarehouseManager>();
+
+            if (setupAction != null)
+            {
+                services.Configure(setupAction);
+            }
 
             return new WarehouseBuilder(typeof(Guid), services);
         }
+
 
         /// <summary>
         /// Adds and configures the warehouse system.

@@ -23,6 +23,6 @@ namespace Compradon.Warehouse
         /// </summary>
         /// <param name="entity">The entity type to validate.</param>
         /// <returns>A <see cref="Task{TResult}"/> that represents the <see cref="WarehouseResult"/> of the asynchronous validation.</returns>
-        Task<WarehouseResult> ValidateAsync(EntityType<TKey> entity);
+        Task<WarehouseResult> ValidateAsync(WarehouseType<TKey> entity);
     }
 }

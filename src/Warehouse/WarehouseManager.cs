@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 namespace Compradon.Warehouse
 {
     /// <summary>
-    /// Provides the APIs for managing entity in a persistence store.
+    /// Provides the APIs for managing entity in a persistence store .
     /// </summary>
     public class WarehouseManager : WarehouseManager<Guid>
     {
@@ -19,7 +19,7 @@ namespace Compradon.Warehouse
         public WarehouseManager(
             IEntityStore<Guid> store,
             IOptions<WarehouseOptions> options,
-            IEnumerable<IEntityValidator<Guid>> validators,
+            IEnumerable<IEntityValidator> validators,
             ILogger<WarehouseManager<Guid>> logger,
             WarehouseErrorDescriber errorDescriber = null) : base(store, options, validators, logger, errorDescriber)
         {
@@ -56,9 +56,9 @@ namespace Compradon.Warehouse
         protected internal IEntityStore<TKey> Store { get; }
 
         /// <summary>
-        /// The <see cref="IEntityValidator{TKey}"/> used to validate entities.
+        /// The <see cref="IEntityValidator"/> used to validate entities.
         /// </summary>
-        public IEnumerable<IEntityValidator<TKey>> Validators { get; }
+        public IEnumerable<IEntityValidator> Validators { get; }
         
         /// <summary>
         /// Gets the <see cref="WarehouseErrorDescriber"/> used to provider error messages.
@@ -91,7 +91,7 @@ namespace Compradon.Warehouse
         public WarehouseManager(
             IEntityStore<TKey> store,
             IOptions<WarehouseOptions> options,
-            IEnumerable<IEntityValidator<TKey>> validators,
+            IEnumerable<IEntityValidator> validators,
             ILogger<WarehouseManager<TKey>> logger,
             WarehouseErrorDescriber errorDescriber = null)
         {
@@ -114,7 +114,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> DeleteAsync(Entity<TKey> entity)
+        public virtual async Task<WarehouseResult> DeleteAsync(WarehouseEntity<TKey> entity)
         {
             ThrowIfDisposed();
 
@@ -145,7 +145,7 @@ namespace Compradon.Warehouse
         /// <typeparam name="TEntity">The entities type to search for.</typeparam>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
         public virtual async Task<WarehousePagination<TEntity>> FindAsync<TEntity>()
-            where TEntity : Entity<TKey>
+            where TEntity : WarehouseEntity<TKey>
         {
             ThrowIfDisposed();
 
@@ -166,7 +166,7 @@ namespace Compradon.Warehouse
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
         /// </returns>
         public virtual async Task<TEntity> FindByIdAsync<TEntity>(TKey entityId)
-            where TEntity : Entity<TKey>
+            where TEntity : WarehouseEntity<TKey>
         {
             ThrowIfDisposed();
 
@@ -178,7 +178,6 @@ namespace Compradon.Warehouse
             return null;
         }
 
-        /// CreateInstance
         /// <summary>
         /// Creates an instance of the entity type designated by the specified entity type parameter, using the parameterless constructor.
         /// </summary>
@@ -197,7 +196,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> SaveAsync(Entity<TKey> entity)
+        public virtual async Task<WarehouseResult> SaveAsync(WarehouseEntity<TKey> entity)
         {
             ThrowIfDisposed();
 
@@ -213,13 +212,13 @@ namespace Compradon.Warehouse
         /// </summary>
         /// <param name="entity">The entity</param>
         /// <returns>A <see cref="WarehouseResult"/> representing whether validation was successful.</returns>
-        protected async Task<WarehouseResult> ValidateAsync(Entity<TKey> entity)
+        protected async Task<WarehouseResult> ValidateAsync(WarehouseEntity<TKey> entity)
         {
             var errors = new List<WarehouseError>();
 
             foreach (var validator in Validators)
             {
-                var result = await validator.ValidateAsync(this, entity);
+                var result = await validator.ValidateAsync<WarehouseEntity<TKey>, TKey>(entity);
                 if (result.Succeeded) continue;
 
                 errors.AddRange(result.Errors);
