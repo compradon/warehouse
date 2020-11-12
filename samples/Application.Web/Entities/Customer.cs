@@ -2,8 +2,7 @@ using Compradon.Warehouse;
 
 namespace Application.Entities
 {
-    [Entity]
-    public class Customer
+    public class Customer : WarehouseEntity
     {
         [Attribute]
         public string Name { get; set; }
