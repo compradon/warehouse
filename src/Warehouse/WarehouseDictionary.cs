@@ -10,7 +10,7 @@ namespace Compradon.Warehouse
     /// </summary>
     public class WarehouseDictionary : WarehouseDictionary<int>
     {
-        
+
     }
 
     /// <summary>
@@ -61,7 +61,16 @@ namespace Compradon.Warehouse
         /// </summary>
         public WarehouseDictionary()
         {
+            _items = new List<DictionaryValue<TKey>>();
+        }
 
+        /// <summary>
+        /// Constructs a new instance of <see cref="WarehouseDictionary{T}"/> with values.
+        /// </summary>
+        /// <param name="values">Collection of elements on the dictionary.</param>
+        public WarehouseDictionary(DictionaryValue<TKey>[] values)
+        {
+            _items = values;
         }
 
         #endregion
