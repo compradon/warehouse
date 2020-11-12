@@ -2,7 +2,7 @@ using Compradon.Warehouse;
 
 namespace Application.Entities
 {
-    public class Order : Entity
+    public class Order : WarehouseEntity
     {
         public long Number { get; set; }
 
