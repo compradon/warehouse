@@ -5,17 +5,22 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <RootNamespace>Compradon.Warehouse.Postgres</RootNamespace>
+    <RootNamespace>Compradon.Warehouse.PostgreSQL</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyName>Compradon.Warehouse.Postgres</AssemblyName>
+    <AssemblyName>Compradon.Warehouse.PostgreSQL</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts/build.sql" />
+    <EmbeddedResource Include="Scripts/clear.sql" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Npgsql" Version="5.0.1.1" />

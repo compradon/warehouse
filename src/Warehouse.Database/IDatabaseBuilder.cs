@@ -8,23 +8,13 @@ namespace Compradon.Warehouse.Database
     public interface IDatabaseBuilder
     {
         /// <summary>
-        /// Creates the warehouse database schema.
-        /// </summary>
-        Task CreateAsync();
-
-        /// <summary>
         /// Drops the warehouse database schema.
         /// </summary>
-        Task DropAsync();
+        Task<WarehouseResult> ClearAsync();
 
         /// <summary>
-        /// Determines whether the specified warehouse database schema exists.
+        /// Creates the warehouse database schema.
         /// </summary>
-        Task<bool> ExistsAsync();
-
-        /// <summary>
-        /// Gets the version of the warehouse database schema.
-        /// </summary>
-        Task<string> VersionAsync();
+        Task<WarehouseResult> BuildAsync();
     }
 }

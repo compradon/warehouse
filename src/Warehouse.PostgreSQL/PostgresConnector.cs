@@ -1,8 +1,9 @@
 ﻿using System.Data;
 using System.Threading.Tasks;
+using Compradon.Warehouse.Database;
 using Npgsql;
 
-namespace Compradon.Warehouse.Database.Postgres
+namespace Compradon.Warehouse.PostgreSQL
 {
     /// <summary>
     /// Provides an abstraction class for connecting to the warehouse database.

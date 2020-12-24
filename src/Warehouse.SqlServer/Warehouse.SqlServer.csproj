@@ -18,6 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Scripts/build.sql" />
+    <EmbeddedResource Include="Scripts/clear.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 
