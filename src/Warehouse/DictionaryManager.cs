@@ -8,7 +8,7 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides the APIs for managing warehouse dictionaries which uses a <see cref="int" /> as a primary key in a persistence store.
     /// </summary>
-    public class DictionaryManager : DictionaryManager<int>
+    public class DictionaryManager : DictionaryManager<WarehouseDictionary, int>
     {
         
     }
@@ -16,8 +16,10 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides the APIs for managing warehouse dictionaries in a persistence store.
     /// </summary>
+    /// <typeparam name="TDictionary">The type used for the dictionary.</typeparam>
     /// <typeparam name="TKey">The type used for the primary key for the dictionary and elements.</typeparam>
-    public class DictionaryManager<TKey> : IDisposable
+    public class DictionaryManager<TDictionary, TKey> : IDisposable
+        where TDictionary : WarehouseDictionary<TKey>
         where TKey : IEquatable<TKey>
     {
         #region Variables
@@ -39,7 +41,7 @@ namespace Compradon.Warehouse
         /// <value>
         /// The persistence store the manager operates over.
         /// </value>
-        protected internal IDictionaryStore<TKey> Store { get; }
+        protected internal IDictionaryStore<TDictionary, TKey> Store { get; }
 
         /// <summary>
         /// Gets the <see cref="WarehouseErrorDescriber"/> used to provider error messages.
@@ -73,7 +75,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> DeleteAsync(WarehouseDictionary<TKey> dictionary)
+        public virtual async Task<WarehouseResult> DeleteAsync(TDictionary dictionary)
         {
             ThrowIfDisposed();
 
@@ -105,7 +107,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the dictionary matching the specified <paramref name="dictionaryKey"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseDictionary<TKey>> GetAsync(TKey dictionaryKey)
+        public virtual async Task<TDictionary> GetAsync(TKey dictionaryKey)
         {
             ThrowIfDisposed();
 
@@ -126,7 +128,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the dictionary matching the specified <paramref name="alias"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseDictionary<TKey>> FindByAliasAsync(string alias)
+        public virtual async Task<TDictionary> FindByAliasAsync(string alias)
         {
             ThrowIfDisposed();
 
@@ -147,7 +149,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> SaveAsync(WarehouseDictionary<TKey> dictionary)
+        public virtual async Task<WarehouseResult> SaveAsync(TDictionary dictionary)
         {
             ThrowIfDisposed();
 

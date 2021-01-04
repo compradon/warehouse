@@ -10,7 +10,7 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides the APIs for managing warehouse entity types which uses a <see cref="short" /> as a primary key in a persistence store.
     /// </summary>
-    public class TypeManager : TypeManager<short>
+    public class TypeManager : TypeManager<WarehouseType, short>
     {
         #region Constructors
 
@@ -33,8 +33,10 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides the APIs for managing warehouse entity types in a persistence store.
     /// </summary>
+    /// <typeparam name="TWarehouseType">The type used for the primary key for the entity.</typeparam>
     /// <typeparam name="TKey">The type used for the primary key for the entity type.</typeparam>
-    public class TypeManager<TKey> : IDisposable
+    public class TypeManager<TWarehouseType, TKey> : IDisposable
+        where TWarehouseType : WarehouseType<TKey>
         where TKey : IEquatable<TKey>
     {
         #region Variables
@@ -56,12 +58,12 @@ namespace Compradon.Warehouse
         /// <value>
         /// The persistence store the manager operates over.
         /// </value>
-        protected internal ITypeStore<TKey> Store { get; }
+        protected internal ITypeStore<TWarehouseType, TKey> Store { get; }
 
         /// <summary>
         /// The <see cref="ITypeValidator"/> used to validate entity types.
         /// </summary>
-        public IEnumerable<ITypeValidator<TKey>> Validators { get; }
+        public IEnumerable<ITypeValidator<TWarehouseType, TKey>> Validators { get; }
 
         /// <summary>
         /// Gets the <see cref="WarehouseErrorDescriber"/> used to provider error messages.
@@ -89,13 +91,13 @@ namespace Compradon.Warehouse
         #region Constructors
 
         /// <summary>
-        /// Constructs a new instance of <see cref="TypeManager{TKey}"/>.
+        /// Constructs a new instance of <see cref="TypeManager{TWarehouseType, TKey}"/>.
         /// </summary>
         public TypeManager(
-            ITypeStore<TKey> store,
+            ITypeStore<TWarehouseType, TKey> store,
             IOptions<WarehouseOptions> options,
-            IEnumerable<ITypeValidator<TKey>> validators,
-            ILogger<TypeManager<TKey>> logger,
+            IEnumerable<ITypeValidator<TWarehouseType, TKey>> validators,
+            ILogger<TypeManager<TWarehouseType, TKey>> logger,
             WarehouseErrorDescriber errorDescriber = null)
         {
             if (store == null) throw new ArgumentNullException(nameof(store));
@@ -112,35 +114,35 @@ namespace Compradon.Warehouse
         #region Methods
 
         /// <summary>
-        /// Deletes the specified <paramref name="entityType"/> from the backing store.
+        /// Deletes the specified <paramref name="warehouseType"/> from the backing store.
         /// </summary>
-        /// <param name="entityType">The entity type to delete.</param>
+        /// <param name="warehouseType">The entity type to delete.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> DeleteAsync(WarehouseType<TKey> entityType)
+        public virtual async Task<WarehouseResult> DeleteAsync(TWarehouseType warehouseType)
         {
             ThrowIfDisposed();
 
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            if (warehouseType == null) throw new ArgumentNullException(nameof(warehouseType));
 
-            return await DeleteAsync(entityType.Key);
+            return await DeleteAsync(warehouseType.Key);
         }
 
         /// <summary>
-        /// Deletes the specified <paramref name="typeKey"/> from the backing store.
+        /// Deletes the specified <paramref name="warehouseTypeKey"/> from the backing store.
         /// </summary>
-        /// <param name="typeKey">The primary key of the entity type.</param>
+        /// <param name="warehouseTypeKey">The primary key of the entity type.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> DeleteAsync(TKey typeKey)
+        public virtual async Task<WarehouseResult> DeleteAsync(TKey warehouseTypeKey)
         {
             ThrowIfDisposed();
 
-            if (typeKey == null) throw new ArgumentNullException(nameof(typeKey));
+            if (warehouseTypeKey == null) throw new ArgumentNullException(nameof(warehouseTypeKey));
 
-            return await Store.DeleteAsync(typeKey, CancellationToken);
+            return await Store.DeleteAsync(warehouseTypeKey, CancellationToken);
         }
 
         /// <summary>
@@ -149,7 +151,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IEnumerable{EntityType}"/> of the operation.
         /// </returns>
-        public virtual async Task<IEnumerable<WarehouseType<TKey>>> GetAllAsync()
+        public virtual async Task<IEnumerable<TWarehouseType>> GetAllAsync()
         {
             ThrowIfDisposed();
 
@@ -162,19 +164,19 @@ namespace Compradon.Warehouse
         }
 
         /// <summary>
-        /// Gets an entity type, if any, who has the specified <paramref name="typeKey"/>.
+        /// Gets an entity type, if any, who has the specified <paramref name="warehouseTypeKey"/>.
         /// </summary>
-        /// <param name="typeKey">The primary key of the entity type.</param>
+        /// <param name="warehouseTypeKey">The primary key of the entity type.</param>
         /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="typeKey"/> if it exists.
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="warehouseTypeKey"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseType<TKey>> GetAsync(TKey typeKey)
+        public virtual async Task<TWarehouseType> GetAsync(TKey warehouseTypeKey)
         {
             ThrowIfDisposed();
 
-            if (typeKey == null) throw new ArgumentNullException(nameof(typeKey));
+            if (warehouseTypeKey == null) throw new ArgumentNullException(nameof(warehouseTypeKey));
 
-            var result = await Store.GetAsync(typeKey, CancellationToken);
+            var result = await Store.GetAsync(warehouseTypeKey, CancellationToken);
 
             if (result.Succeeded) return result.Value;
             if (result.Exception != null) throw result.Exception;
@@ -189,7 +191,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="alias"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseType<TKey>> FindByAliasAsync(string alias)
+        public virtual async Task<TWarehouseType> FindByAliasAsync(string alias)
         {
             ThrowIfDisposed();
 
@@ -210,7 +212,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <typeparamref name="T"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseType<TKey>> FindByTypeAsync<T>()
+        public virtual async Task<TWarehouseType> FindByTypeAsync<T>()
         {
             ThrowIfDisposed();
 
@@ -224,7 +226,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="type"/> if it exists.
         /// </returns>
-        public virtual async Task<WarehouseType<TKey>> FindByTypeAsync(Type type)
+        public virtual async Task<TWarehouseType> FindByTypeAsync(Type type)
         {
             ThrowIfDisposed();
 
@@ -239,21 +241,21 @@ namespace Compradon.Warehouse
         }
 
         /// <summary>
-        /// Save the specified <paramref name="entityType"/> in the backing store.
+        /// Save the specified <paramref name="warehouseType"/> in the backing store.
         /// </summary>
-        /// <param name="entityType">The entity type to save.</param>
+        /// <param name="warehouseType">The entity type to save.</param>
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.
         /// </returns>
-        public virtual async Task<WarehouseResult> SaveAsync(WarehouseType<TKey> entityType)
+        public virtual async Task<WarehouseResult> SaveAsync(TWarehouseType warehouseType)
         {
             ThrowIfDisposed();
 
-            if (entityType == null) throw new ArgumentNullException(nameof(entityType));
+            if (warehouseType == null) throw new ArgumentNullException(nameof(warehouseType));
 
-            var result = await ValidateAsync(entityType);
+            var result = await ValidateAsync(warehouseType);
 
-            return result.Succeeded ? await Store.SaveAsync(entityType, CancellationToken) : result;
+            return result.Succeeded ? await Store.SaveAsync(warehouseType, CancellationToken) : result;
         }
 
         #endregion
@@ -263,15 +265,15 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Should return <see cref="WarehouseResult.Success"/> if validation is successful. This is called before saving the entity type via Create or Update.
         /// </summary>
-        /// <param name="entityType">The entity type.</param>
+        /// <param name="warehouseType">The entity type.</param>
         /// <returns>A <see cref="WarehouseResult"/> representing whether validation was successful.</returns>
-        protected async Task<WarehouseResult> ValidateAsync(WarehouseType<TKey> entityType)
+        protected async Task<WarehouseResult> ValidateAsync(TWarehouseType warehouseType)
         {
             var errors = new List<WarehouseError>();
 
             foreach (var validator in Validators)
             {
-                var result = await validator.ValidateAsync(entityType);
+                var result = await validator.ValidateAsync(warehouseType);
                 if (result.Succeeded) continue;
 
                 errors.AddRange(result.Errors);

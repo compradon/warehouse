@@ -51,7 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddOptions().AddLogging();
 
             // Services used by warehouse system
-            services.TryAddScoped<WarehouseManager<TKey>>();
+            services.TryAddScoped<WarehouseManager<WarehouseEntity<TKey>, TKey>>();
 
             return new WarehouseBuilder(typeof(TKey), services);
         }

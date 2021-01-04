@@ -8,7 +8,7 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides an abstraction for a storage and management of entity types which uses a <see cref="short" /> as a primary key.
     /// </summary>
-    public interface ITypeStore : ITypeStore<short>
+    public interface ITypeStore : ITypeStore<WarehouseType, short>
     {
 
     }
@@ -16,8 +16,10 @@ namespace Compradon.Warehouse
     /// <summary>
     /// Provides an abstraction for a storage and management of entity types.
     /// </summary>
-    /// <typeparam name="TKey">The type used for the primary key for the entity.</typeparam>
-    public interface ITypeStore<TKey> : IDisposable
+    /// <typeparam name="TWarehouseType">The type of the class representing a entity type.</typeparam>
+    /// <typeparam name="TKey">The type of the primary key for a entity type.</typeparam>
+    public interface ITypeStore<TWarehouseType, TKey> : IDisposable
+        where TWarehouseType : WarehouseType<TKey>
         where TKey : IEquatable<TKey>
     {
         /// <summary>
@@ -33,7 +35,7 @@ namespace Compradon.Warehouse
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
-        Task<WarehouseResult<IEnumerable<WarehouseType<TKey>>>> GetAllAsync(CancellationToken cancellationToken);
+        Task<WarehouseResult<IEnumerable<TWarehouseType>>> GetAllAsync(CancellationToken cancellationToken);
         
         /// <summary>
         /// Finds and returns an entity type, if any, who has the specified <paramref name="typeKey"/>.
@@ -43,7 +45,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="typeKey"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<WarehouseType<TKey>>> GetAsync(TKey typeKey, CancellationToken cancellationToken);
+        Task<WarehouseResult<TWarehouseType>> GetAsync(TKey typeKey, CancellationToken cancellationToken);
 
         /// <summary>
         /// Finds and returns an entity type, if any, who has the specified <paramref name="alias"/>.
@@ -53,7 +55,7 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="alias"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<WarehouseType<TKey>>> FindByAliasAsync(string alias, CancellationToken cancellationToken);
+        Task<WarehouseResult<TWarehouseType>> FindByAliasAsync(string alias, CancellationToken cancellationToken);
 
         /// <summary>
         /// Finds and returns an entity type, if any, who has the specified <paramref name="className"/>.
@@ -63,14 +65,14 @@ namespace Compradon.Warehouse
         /// <returns>
         /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity type matching the specified <paramref name="className"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<WarehouseType<TKey>>> FindByTypeAsync(string className, CancellationToken cancellationToken);
+        Task<WarehouseResult<TWarehouseType>> FindByTypeAsync(string className, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Save the specified <paramref name="entityType"/> in the backing store.
+        /// Save the specified <paramref name="warehouseType"/> in the backing store.
         /// </summary>
-        /// <param name="entityType">The entity type to save.</param>
+        /// <param name="warehouseType">The entity type to save.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
-        Task<WarehouseResult> SaveAsync(WarehouseType<TKey> entityType, CancellationToken cancellationToken);
+        Task<WarehouseResult> SaveAsync(TWarehouseType warehouseType, CancellationToken cancellationToken);
     }
 }

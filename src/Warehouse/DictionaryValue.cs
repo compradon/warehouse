@@ -3,7 +3,7 @@ using System;
 namespace Compradon.Warehouse
 {
     /// <summary>
-    /// Provides the type of entity which uses a <see cref="short" /> as a primary key in the warehouse system.
+    /// Provides the type of entity which uses a <see cref="int" /> as a primary key in the warehouse system.
     /// </summary>
     public class DictionaryValue : DictionaryValue<int>
     {
