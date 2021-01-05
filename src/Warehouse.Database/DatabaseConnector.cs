@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace Compradon.Warehouse.Database
@@ -57,14 +58,14 @@ namespace Compradon.Warehouse.Database
         /// Creates a database connection as an asynchronous operation.
         /// </summary>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
-        protected abstract Task<IDbConnection> InitializeСonnectionAsync();
+        protected abstract Task<DbConnection> InitializeСonnectionAsync();
 
         /// <summary>
         /// Creates a database connection as an asynchronous operation.
         /// </summary>
         /// <param name="open">Indicates the need to immediately open a connection to the database.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
-        public virtual async Task<IDbConnection> CreateConnectionAsync(bool open = true)
+        public virtual async Task<DbConnection> CreateConnectionAsync(bool open = true)
         {
             var connection = await InitializeСonnectionAsync();
 

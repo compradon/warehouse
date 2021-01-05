@@ -33,12 +33,16 @@ namespace Compradon.Warehouse.Database
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Constructs a new instance of <see cref="DatabaseBuilder"/>.
         /// </summary>
+        /// <param name="connector">The <see cref="IDatabaseConnector"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         public DatabaseBuilder(
             IDatabaseConnector connector,
             ILogger<DatabaseBuilder> logger = null)
         {
+            if (connector == null) throw new ArgumentNullException(nameof(connector));
+
             Connector = connector;
             Logger = logger;
         }
@@ -48,21 +52,21 @@ namespace Compradon.Warehouse.Database
         #region IDatabaseBuilder
 
         /// <summary>
-        /// Drops the warehouse database schema.
-        /// </summary>
-        public async Task<WarehouseResult> ClearAsync()
-        {
-            var script = await GetScriptAsync("clear");
-
-            return await ExecuteAsync(script);
-        }
-
-        /// <summary>
         /// Creates the warehouse database schema.
         /// </summary>
         public async Task<WarehouseResult> BuildAsync()
         {
             var script = await GetScriptAsync("build");
+
+            return await ExecuteAsync(script);
+        }
+
+        /// <summary>
+        /// Drops the warehouse database schema.
+        /// </summary>
+        public async Task<WarehouseResult> ClearAsync()
+        {
+            var script = await GetScriptAsync("clear");
 
             return await ExecuteAsync(script);
         }
