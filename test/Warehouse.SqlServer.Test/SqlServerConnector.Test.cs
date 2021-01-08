@@ -2,7 +2,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Compradon.Warehouse.Database.SqlServer.Test
+namespace Compradon.Warehouse.SqlServer.Test
 {
     public class SqlServerConnectorTest
     {
