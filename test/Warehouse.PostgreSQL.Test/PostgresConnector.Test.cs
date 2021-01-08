@@ -2,7 +2,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Compradon.Warehouse.Database.Postgres.Test
+namespace Compradon.Warehouse.PostgreSQL.Test
 {
     public class PostgresConnectorTest
     {
