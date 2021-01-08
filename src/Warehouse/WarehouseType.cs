@@ -44,6 +44,11 @@ namespace Compradon.Warehouse
         /// </summary>
         public string Summary { get; set; }
 
+        /// <summary>
+        /// Gets or sets the flag indicating if the warehouse type has removed.
+        /// </summary>
+        public bool Removed { get; set; }
+
         #endregion
     }
 }

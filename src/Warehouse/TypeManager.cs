@@ -232,7 +232,7 @@ namespace Compradon.Warehouse
 
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            var result = await Store.FindByTypeAsync(type.FullName, CancellationToken);
+            var result = await Store.FindByClassAsync(type.FullName, CancellationToken);
 
             if (result.Succeeded) return result.Value;
             if (result.Exception != null) throw result.Exception;
