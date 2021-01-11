@@ -1,6 +1,5 @@
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace Compradon.Warehouse.Database
@@ -15,6 +14,6 @@ namespace Compradon.Warehouse.Database
         /// </summary>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
         /// <param name="open">Indicates the need to immediately open a connection to the database.</param>
-        Task<DbConnection> CreateConnectionAsync(bool open = true);
+        Task<IDbConnection> CreateConnectionAsync(bool open = true);
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace Compradon.Warehouse.Database
@@ -25,7 +24,7 @@ namespace Compradon.Warehouse.Database
         public string ConnectionString { get; }
 
         /// <summary>
-        /// The connections that were created to the database
+        /// The connections that were created to the database.
         /// </summary>
         protected IList<IDbConnection> Connections { get; } = new List<IDbConnection>();
 
@@ -58,14 +57,14 @@ namespace Compradon.Warehouse.Database
         /// Creates a database connection as an asynchronous operation.
         /// </summary>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
-        protected abstract Task<DbConnection> InitializeСonnectionAsync();
+        protected abstract Task<IDbConnection> InitializeСonnectionAsync();
 
         /// <summary>
         /// Creates a database connection as an asynchronous operation.
         /// </summary>
         /// <param name="open">Indicates the need to immediately open a connection to the database.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
-        public virtual async Task<DbConnection> CreateConnectionAsync(bool open = true)
+        public virtual async Task<IDbConnection> CreateConnectionAsync(bool open = true)
         {
             var connection = await InitializeСonnectionAsync();
 
@@ -76,19 +75,18 @@ namespace Compradon.Warehouse.Database
             return connection;
         }
 
+        #endregion
+
+        #region IDisposable
+
         /// <summary>
         /// Releases all resources used by the class instance.
         /// </summary>
         public virtual void Dispose()
         {
-            Dispose(true);
-
+            Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
-
-        #region Helpers
 
         /// <summary>
         /// Releases the unmanaged resources used by the class instance and optionally releases the managed resources.

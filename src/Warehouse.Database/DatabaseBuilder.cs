@@ -1,5 +1,4 @@
 using System;
-using System.Data;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -23,9 +22,6 @@ namespace Compradon.Warehouse.Database
         /// <summary>
         /// The <see cref="ILogger"/> used to log messages from the manager.
         /// </summary>
-        /// <value>
-        /// The <see cref="ILogger"/> used to log messages from the manager.
-        /// </value>
         public virtual ILogger<DatabaseBuilder> Logger { get; set; }
 
         #endregion
@@ -56,9 +52,24 @@ namespace Compradon.Warehouse.Database
         /// </summary>
         public async Task<WarehouseResult> BuildAsync()
         {
+            Logger?.LogInformation("Trying to create the warehouse database schema.");
+
             var script = await GetScriptAsync("build");
 
-            return await ExecuteAsync(script);
+            using var connection = await Connector.CreateConnectionAsync();
+
+            var result = await ExecuteAsync(script);
+
+            if (result.Succeeded)
+            {
+                Logger?.LogInformation("Successfully created the warehouse database schema.");
+            }
+            else
+            {
+                Logger?.LogError(result.Exception, "Fail created the warehouse database schema.");
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -66,9 +77,21 @@ namespace Compradon.Warehouse.Database
         /// </summary>
         public async Task<WarehouseResult> ClearAsync()
         {
-            var script = await GetScriptAsync("clear");
+            Logger?.LogInformation("Trying to clear the warehouse database schema.");
 
-            return await ExecuteAsync(script);
+            var script = await GetScriptAsync("clear");
+            var result = await ExecuteAsync(script);
+
+            if (result.Succeeded)
+            {
+                Logger?.LogInformation("Successfully cleared the warehouse database schema.");
+            }
+            else
+            {
+                Logger?.LogError(result.Exception, "Fail cleared the warehouse database schema.");
+            }
+
+            return result;
         }
 
         #endregion
@@ -77,13 +100,9 @@ namespace Compradon.Warehouse.Database
 
         private async Task<WarehouseResult> ExecuteAsync(string commandText)
         {
-            using var connector = await Connector.CreateConnectionAsync();
-            var command = connector.CreateCommand();
+            using var connection = await Connector.CreateConnectionAsync();
 
-            command.CommandText = commandText;
-            command.CommandType = CommandType.Text;
-
-            try { command.ExecuteNonQuery(); }
+            try { await connection.Query(commandText).RunAsync(); }
             catch (InvalidOperationException exception)
             {
                 return WarehouseResult.Failed(exception);
