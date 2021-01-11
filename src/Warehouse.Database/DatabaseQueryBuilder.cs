@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Compradon.Warehouse.Database
@@ -125,6 +127,21 @@ namespace Compradon.Warehouse.Database
         public async Task<DbDataReader> ExecuteAsync()
         {
             return await Command.ExecuteReaderAsync();
+        }
+
+        /// <summary>
+        /// Executes the query against and returns an <see cref="IAsyncEnumerable{T}"/>.
+        /// </summary>
+        public async IAsyncEnumerable<T> ExecuteAsync<T>()
+        {
+            var dataReader = await Command.ExecuteReaderAsync();
+
+            if (dataReader.FieldCount == 0) yield break;
+
+            while (await dataReader.ReadAsync())
+            {
+                yield return dataReader.Build<T>();
+            }
         }
 
         #endregion
