@@ -36,6 +36,9 @@ namespace Compradon.Warehouse.Database
         /// <param name="commandType">Specifies how a command string is interpreted.</param>
         public DatabaseQueryBuilder(IDbConnection connection, string commandText, CommandType commandType = CommandType.Text)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (commandText == null) throw new ArgumentNullException(nameof(commandText));
+
             Command = CreateCommand(connection);
             Connection = CreateConnection(connection);
 
@@ -68,16 +71,39 @@ namespace Compradon.Warehouse.Database
         /// <summary>
         /// Adds parameter to execute a command.
         /// </summary>
-        /// <param name="name">The connection to the data source.</param>
-        /// <param name="value">The connection to the data source.</param>
-        public DatabaseQueryBuilder AddParameter(string name, object value)
+        /// <param name="name">The name of the parameter.</param>
+        /// <param name="value">The value of the parameter.</param>
+        /// <param name="type">The type of the parameter.</param>
+        /// <param name="size">The size of the parameter.</param>
+        /// <param name="direction">The direction type of the parameter.</param>
+        public DatabaseQueryBuilder AddParameter(string name, object value = null, DbType? type = null, int? size = null, ParameterDirection? direction = null)
         {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+
             var parameter = Command.CreateParameter();
 
             parameter.ParameterName = name;
             parameter.Value = value;
+            parameter.Direction = direction ?? ParameterDirection.Input;
+
+            if (type != null) parameter.DbType = type.Value;
+            if (size != null) parameter.Size = size.Value;
 
             Command.Parameters.Add(parameter);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds dynamic parameters to execute a command.
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        public DatabaseQueryBuilder Parameters(object parameters)
+        {
+            foreach (var property in parameters.GetType().GetProperties())
+            {
+                AddParameter(property.Name, property.GetValue(parameters));
+            }
 
             return this;
         }

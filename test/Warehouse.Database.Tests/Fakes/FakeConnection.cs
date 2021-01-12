@@ -1,58 +1,46 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 namespace Compradon.Warehouse.Database.Tests
 {
-    public class FakeConnection : IDbConnection
+    public class FakeConnection : DbConnection
     {
         private ConnectionState _state;
+        public override string ConnectionString { get; set; }
+        public override string Database => throw new NotImplementedException();
+        public override string DataSource => throw new NotImplementedException();
+        public override string ServerVersion => throw new NotImplementedException();
+        public override ConnectionState State => _state;
 
         public FakeConnection(string connectionString)
         {
             ConnectionString = connectionString;
         }
 
-        public string ConnectionString { get; set; }
-
-        public int ConnectionTimeout => throw new NotImplementedException();
-
-        public string Database => throw new NotImplementedException();
-
-        public ConnectionState State => _state;
-
-        public IDbTransaction BeginTransaction()
+        public override void ChangeDatabase(string databaseName)
         {
             throw new NotImplementedException();
         }
 
-        public IDbTransaction BeginTransaction(IsolationLevel il)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ChangeDatabase(string databaseName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Close()
+        public override void Close()
         {
             _state = ConnectionState.Closed;
         }
 
-        public IDbCommand CreateCommand()
+        public override void Open()
+        {
+            _state = ConnectionState.Open;
+        }
+
+        protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         {
             throw new NotImplementedException();
         }
 
-        public void Dispose()
+        protected override DbCommand CreateDbCommand()
         {
-            GC.SuppressFinalize(this);
-        }
-
-        public void Open()
-        {
-            _state = ConnectionState.Open;
+            return new FakeCommand();
         }
     }
 }
