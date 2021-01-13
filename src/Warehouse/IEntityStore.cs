@@ -22,12 +22,12 @@ namespace Compradon.Warehouse
         where TKey : IEquatable<TKey>
     {
         /// <summary>
-        /// Deletes the specified entity by <paramref name="entityId"/> from the entity store.
+        /// Deletes the specified entity by <paramref name="key"/> from the entity store.
         /// </summary>
-        /// <param name="entityId">The entity key to delete.</param>
+        /// <param name="key">The entity key to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the update operation.</returns>
-        Task<WarehouseResult> DeleteAsync(TKey entityId, CancellationToken cancellationToken);
+        Task<WarehouseResult> DeleteAsync(TKey key, CancellationToken cancellationToken);
 
         /// <summary>
         /// Finds and returns an entities, if any, who has the specified conditions.
@@ -39,15 +39,15 @@ namespace Compradon.Warehouse
             where T : TEntity;
 
         /// <summary>
-        /// Finds and returns a entity, if any, who has the specified <paramref name="entityId"/>.
+        /// Finds and returns a entity, if any, who has the specified <paramref name="key"/>.
         /// </summary>
         /// <typeparam name="T">The entities type to search for.</typeparam>
-        /// <param name="entityId">The entity ID to search for.</param>
+        /// <param name="key">The entity ID to search for.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="entityId"/> if it exists.
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the entity matching the specified <paramref name="key"/> if it exists.
         /// </returns>
-        Task<WarehouseResult<T>> FindByIdAsync<T>(TKey entityId, CancellationToken cancellationToken)
+        Task<WarehouseResult<T>> FindByIdAsync<T>(TKey key, CancellationToken cancellationToken)
             where T : TEntity;
 
         /// <summary>
