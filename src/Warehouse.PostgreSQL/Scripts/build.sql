@@ -2,133 +2,170 @@ CREATE SCHEMA warehouse;
 
 CREATE TABLE warehouse.system
 (
-    key VARCHAR(32) PRIMARY KEY,
-    value VARCHAR(128) NOT NULL
+    key VARCHAR(50) CONSTRAINT pk_system PRIMARY KEY,
+    value VARCHAR(250) NOT NULL
 );
 
 CREATE TABLE warehouse.dictionary
 (
-    key SERIAL CONSTRAINT pk_dictionary_key PRIMARY KEY,
-    parent_key INTEGER NULL CONSTRAINT fk_dictionary_dictionary REFERENCES warehouse.dictionary (key) ON DELETE CASCADE,
-    alias VARCHAR(128) NULL CONSTRAINT uq_dictionary_alias UNIQUE,
-    display VARCHAR(128) NOT NULL,
-    enum VARCHAR(64) NULL,
-    value INTEGER NULL,
-    summary VARCHAR(256) NULL,
-    protected BOOLEAN NOT NULL CONSTRAINT df_dictionary_protected DEFAULT (false)
+    dictionary_id SERIAL CONSTRAINT pk_dictionary PRIMARY KEY,
+    alias VARCHAR(50) NOT NULL CONSTRAINT uq_dictionary_alias UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    summary VARCHAR(500) NULL,
+    is_removed BOOLEAN NOT NULL CONSTRAINT df_dictionary_removed DEFAULT (false)
 );
 
-CREATE TABLE warehouse.type
+CREATE TABLE warehouse.dictionary_item
 (
-    key SMALLSERIAL CONSTRAINT pk_type_id PRIMARY KEY,
-    alias VARCHAR(32) CONSTRAINT uq_type_alias UNIQUE,
-    display VARCHAR(64) NOT NULL,
-    class VARCHAR(128) NULL,
-    summary VARCHAR(256) NULL
+    item_id SERIAL CONSTRAINT pk_item PRIMARY KEY,
+    parent_item_id INT NULL CONSTRAINT fk_item_parent REFERENCES warehouse.dictionary_item (item_id) ON DELETE CASCADE,
+    value INT NULL,
+    name VARCHAR(100) NOT NULL,
+    summary VARCHAR(500) NULL,
+    is_removed BOOLEAN NOT NULL CONSTRAINT df_item_removed DEFAULT (false)
 );
 
-CREATE TYPE warehouse.value_type AS ENUM
+CREATE TABLE warehouse.dictionary_collations
 (
-    'reference',
-    'bool',
-    'int',
-    'deciamal',
-    'string',
-    'text',
-    'datetime',
-    'json'
+    item_id SMALLINT NOT NULL CONSTRAINT fk_dictionary_item REFERENCES warehouse.dictionary_item (item_id) ON DELETE CASCADE,
+    subject VARCHAR(50) NOT NULL,
+    value VARCHAR(250) NOT NULL,
+    is_removed BOOLEAN NOT NULL CONSTRAINT df_dictionary_collations_removed DEFAULT (false),
+
+    CONSTRAINT pk_dictionary_collation PRIMARY KEY (item_id, subject)
 );
 
-CREATE TABLE warehouse.attribute
+CREATE TABLE warehouse.entity_type
 (
-    key SMALLSERIAL CONSTRAINT pk_attribute_key PRIMARY KEY,
-    type warehouse.value_type NOT NULL,
-    type_key SMALLINT NOT NULL CONSTRAINT fk_attribute_type REFERENCES warehouse.type (key) ON DELETE CASCADE,
-    alias VARCHAR(32) NOT NULL,
-    display VARCHAR(64) NOT NULL,
-    summary VARCHAR(256) NULL,
-    required BOOLEAN,
-    CONSTRAINT uq_attribute_alias UNIQUE (alias, type_key)
+    entity_type_id SMALLSERIAL CONSTRAINT pk_type PRIMARY KEY,
+    alias VARCHAR(50) NOT NULL CONSTRAINT uq_type_alias UNIQUE,
+    name VARCHAR(100) NOT NULL,
+    summary VARCHAR(500) NULL,
+    is_private BOOLEAN NOT NULL CONSTRAINT df_type_is_private DEFAULT (false),
+    is_removed BOOLEAN NOT NULL CONSTRAINT df_type_removed DEFAULT (false)
+);
+
+CREATE TABLE warehouse.attribute_type
+(
+    alias VARCHAR(15) CONSTRAINT pk_attribute_alias PRIMARY KEY
+);
+
+INSERT INTO warehouse.attribute_type (alias)
+VALUES ('BOOLEAN'), ('INTEGER'), ('DECIMAL'), ('MONEY'), ('STRING'), ('TEXT'), ('DATETIME'), ('JSON'), ('DICTIONARY'), ('ENTITY');
+
+CREATE TABLE warehouse.entity_attribute
+(
+    attribute_id SMALLSERIAL CONSTRAINT pk_attribute PRIMARY KEY,
+    entity_type_id SMALLINT NOT NULL CONSTRAINT fk_attribute_entity_type REFERENCES warehouse.entity_type (entity_type_id) ON DELETE CASCADE,
+    alias VARCHAR(50) NOT NULL CONSTRAINT uq_attribute_alias UNIQUE,
+    attribute_type VARCHAR(15) NOT NULL CONSTRAINT fk_attribute_type REFERENCES warehouse.attribute_type (alias) ON DELETE CASCADE,
+    dictionary_id INT NULL CONSTRAINT ck_attribute_dictionary CHECK (dictionary_id IS NULL OR (attribute_type = 'DICTIONARY' AND dictionary_id IS NOT NULL)),
+    name VARCHAR(100) NOT NULL,
+    summary VARCHAR(500) NULL,
+    default_value VARCHAR(250) NULL,
+    is_required BOOLEAN NOT NULL CONSTRAINT df_attribute_is_required DEFAULT (false),
+    is_unique BOOLEAN NOT NULL CONSTRAINT df_attribute_is_unique DEFAULT (false),
+    is_removed BOOLEAN NOT NULL CONSTRAINT df_attribute_removed DEFAULT (false)
 );
 
 CREATE TABLE warehouse.entity
 (
-    key UUID CONSTRAINT pk_entity_id PRIMARY KEY,
-    type_key SMALLINT NOT NULL REFERENCES warehouse.type (key) ON DELETE CASCADE,
-    creation_date TIMESTAMP NOT NULL CONSTRAINT df_entity_creation_date DEFAULT (now() at time zone 'utc'),
-    deletion_date TIMESTAMP NULL,
-    read_only BOOLEAN NOT NULL CONSTRAINT df_entity_read_only DEFAULT (false)
-    removed BOOLEAN NOT NULL CONSTRAINT df_entity_removed DEFAULT (false)
+    entity_id UUID CONSTRAINT pk_entity PRIMARY KEY,
+    entity_type_id SMALLINT NOT NULL CONSTRAINT fk_entity_type REFERENCES warehouse.entity_type (entity_type_id) ON DELETE CASCADE,
+    security_stamp UUID NULL,
+    created_at TIMESTAMP NOT NULL CONSTRAINT fk_entity_information_created_at DEFAULT (now() at time zone 'utc'),
+    updated_at TIMESTAMP NULL,
+    removed_at TIMESTAMP NULL,
+    is_read_only BOOLEAN NOT NULL CONSTRAINT df_entity_is_read_only DEFAULT (false),
+    is_removed BOOLEAN NOT NULL CONSTRAINT df_entity_removed DEFAULT (false)
 );
 
-CREATE TABLE warehouse.value_reference
+CREATE TABLE warehouse.value_boolean
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value UUID NULL REFERENCES warehouse.entity (key) ON DELETE SET NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value BOOLEAN NOT NULL,
 
-    CONSTRAINT uq_value_reference UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_boolean PRIMARY KEY (entity_id, attribute_id)
 );
 
-CREATE TABLE warehouse.value_bool
+CREATE TABLE warehouse.value_integer
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value INTEGER NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value INT NOT NULL,
 
-    CONSTRAINT uq_value_bool UNIQUE (entity_key, attribute_key)
-);
-
-CREATE TABLE warehouse.value_int
-(
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value INTEGER NULL,
-
-    CONSTRAINT uq_value_int UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_integer PRIMARY KEY (entity_id, attribute_id)
 );
 
 CREATE TABLE warehouse.value_decimal
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value DECIMAL NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value DECIMAL NOT NULL,
 
-    CONSTRAINT uq_value_decimal UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_decimal PRIMARY KEY (entity_id, attribute_id)
+);
+
+CREATE TABLE warehouse.value_money
+(
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value MONEY NOT NULL,
+
+    CONSTRAINT pk_value_money PRIMARY KEY (entity_id, attribute_id)
 );
 
 CREATE TABLE warehouse.value_string
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value VARCHAR(2048) NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value VARCHAR(250) NOT NULL,
 
-    CONSTRAINT uq_value_string UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_string PRIMARY KEY (entity_id, attribute_id)
 );
 
 CREATE TABLE warehouse.value_text
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value TEXT NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value TEXT NOT NULL,
 
-    CONSTRAINT uq_value_text UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_text PRIMARY KEY (entity_id, attribute_id)
 );
 
 CREATE TABLE warehouse.value_datetime
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value TIMESTAMP NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value TIMESTAMP NOT NULL,
 
-    CONSTRAINT uq_value_datetime UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_datetime PRIMARY KEY (entity_id, attribute_id)
 );
 
 CREATE TABLE warehouse.value_json
 (
-    entity_key UUID NOT NULL REFERENCES warehouse.entity (key) ON DELETE CASCADE,
-    attribute_key SMALLINT NOT NULL REFERENCES warehouse.attribute (key) ON DELETE CASCADE,
-    value JSON NULL,
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value JSONB NOT NULL,
 
-    CONSTRAINT uq_value_json UNIQUE (entity_key, attribute_key)
+    CONSTRAINT pk_value_json PRIMARY KEY (entity_id, attribute_id)
+);
+
+CREATE TABLE warehouse.value_dictionary
+(
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value INT NOT NULL CONSTRAINT fk_value_item REFERENCES warehouse.dictionary_item (item_id) ON DELETE CASCADE,
+
+    CONSTRAINT pk_value_dictionary PRIMARY KEY (entity_id, attribute_id)
+);
+
+CREATE TABLE warehouse.value_entity
+(
+    entity_id UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+    attribute_id SMALLINT NOT NULL REFERENCES warehouse.entity_attribute (attribute_id) ON DELETE CASCADE,
+    value UUID NOT NULL REFERENCES warehouse.entity (entity_id) ON DELETE CASCADE,
+
+    CONSTRAINT pk_value_entity PRIMARY KEY (entity_id, attribute_id)
 );
