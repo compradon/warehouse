@@ -176,7 +176,7 @@ namespace Compradon.Warehouse
 
             if (warehouseTypeKey == null) throw new ArgumentNullException(nameof(warehouseTypeKey));
 
-            var result = await Store.GetAsync(warehouseTypeKey, CancellationToken);
+            var result = await Store.FindByIdAsync(warehouseTypeKey, CancellationToken);
 
             if (result.Succeeded) return result.Value;
             if (result.Exception != null) throw result.Exception;
@@ -255,7 +255,7 @@ namespace Compradon.Warehouse
 
             var result = await ValidateAsync(warehouseType);
 
-            return result.Succeeded ? await Store.SaveAsync(warehouseType, CancellationToken) : result;
+            return result.Succeeded ? await Store.UpdateAsync(warehouseType, CancellationToken) : result;
         }
 
         #endregion

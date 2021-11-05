@@ -31,6 +31,16 @@ namespace Compradon.Warehouse
             Value = value;
         }
 
+        /// <summary>
+        /// Constructs a new instance of <see cref="WarehouseResult"/> indicating a failed warehouse operation.
+        /// </summary>
+        /// <param name="exception">An <see cref="Exception"/> which caused the operation to fail for this result.</param>
+        public WarehouseResult(Exception exception)
+            : base(exception)
+        {
+
+        }
+
         #endregion
     }
 

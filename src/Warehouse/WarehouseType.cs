@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace Compradon.Warehouse
 {
@@ -22,32 +23,50 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets the primary key of the entity.
         /// </summary>
-        public TKey Key { get; protected set; }
+        [JsonPropertyName("entity_type_id")]
+        public TKey Key { get; set; }
 
         /// <summary>
         /// Gets or sets the unique alias of the entity type.
         /// </summary>
+        [JsonPropertyName("alias")]
         public string Alias { get; set; }
 
         /// <summary>
         /// Gets or sets the display name of the entity type.
         /// </summary>
-        public string Display { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the class name of the entity type.
         /// </summary>
+        [JsonPropertyName("class")]
         public string Class { get; set; }
 
         /// <summary>
         /// Gets or sets the summary of the entity type.
         /// </summary>
+        [JsonPropertyName("summary")]
         public string Summary { get; set; }
 
         /// <summary>
         /// Gets or sets the flag indicating if the warehouse type has removed.
         /// </summary>
+        [JsonPropertyName("is_removed")]
         public bool Removed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the flag indicating if the warehouse type has privated.
+        /// </summary>
+        [JsonPropertyName("is_private")]
+        public bool Privated { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [JsonPropertyName("attributes")]
+        public AttributeCollection Attributes { get; set; } = new AttributeCollection();
 
         #endregion
     }

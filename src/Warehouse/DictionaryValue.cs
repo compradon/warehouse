@@ -27,12 +27,17 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets or sets the unique alias of the dictionary value.
         /// </summary>
+        public int Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique alias of the dictionary value.
+        /// </summary>
         public string Alias { get; set; }
 
         /// <summary>
         /// Gets or sets the display name of the dictionary value.
         /// </summary>
-        public string Display { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the summary of the dictionary value.

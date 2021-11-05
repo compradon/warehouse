@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Compradon.Warehouse
 {
@@ -30,7 +31,7 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets the primary key of the dictionary.
         /// </summary>
-        public TKey Key { get; protected set; }
+        public TKey Key { get; set; }
 
         /// <summary>
         /// Gets or sets the unique alias of the dictionary.
@@ -40,7 +41,7 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets or sets the display name of the dictionary.
         /// </summary>
-        public string Display { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the class name of the entity type.
@@ -51,6 +52,12 @@ namespace Compradon.Warehouse
         /// Gets or sets the summary of the entity type.
         /// </summary>
         public string Summary { get; set; }
+
+        /// <summary>
+        /// Gets or sets the flag indicating if the warehouse dictionary has removed.
+        /// </summary>
+        [JsonPropertyName("is_removed")]
+        public bool Removed { get; set; }
 
         #endregion
 
@@ -106,7 +113,6 @@ namespace Compradon.Warehouse
 
         /// <summary>
         /// Adds an <paramref name="item"/> to the <see cref="WarehouseDictionary{TKey}"/>.
-        /// 
         /// </summary>
         /// <param name="item">The dictionary value to add to the dictionary.</param>
         public void Add(DictionaryValue<TKey> item)

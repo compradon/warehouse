@@ -23,6 +23,14 @@ namespace Compradon.Warehouse
         where TKey : IEquatable<TKey>
     {
         /// <summary>
+        /// Creates the specified <paramref name="warehouseType"/> in the in the backing store.
+        /// </summary>
+        /// <param name="warehouseType">The warehouse type to save.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
+        Task<WarehouseResult> CreateAsync(TWarehouseType warehouseType, CancellationToken cancellationToken);
+
+        /// <summary>
         /// Deletes the specified warehouse type by <paramref name="key"/> from the database.
         /// </summary>
         /// <param name="key">The primary key of the warehouse type to delete.</param>
@@ -36,16 +44,6 @@ namespace Compradon.Warehouse
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
         Task<WarehouseResult<IEnumerable<TWarehouseType>>> GetAllAsync(CancellationToken cancellationToken);
-        
-        /// <summary>
-        /// Finds and returns an warehouse type, if any, who has the specified <paramref name="key"/>.
-        /// </summary>
-        /// <param name="key">The primary key of the warehouse type.</param>
-        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
-        /// <returns>
-        /// The <see cref="Task"/> that represents the asynchronous operation, containing the warehouse type matching the specified <paramref name="key"/> if it exists.
-        /// </returns>
-        Task<WarehouseResult<TWarehouseType>> GetAsync(TKey key, CancellationToken cancellationToken);
 
         /// <summary>
         /// Finds and returns an warehouse type, if any, who has the specified <paramref name="alias"/>.
@@ -68,11 +66,21 @@ namespace Compradon.Warehouse
         Task<WarehouseResult<TWarehouseType>> FindByClassAsync(string className, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Save the specified <paramref name="warehouseType"/> in the database.
+        /// Finds and returns an warehouse type, if any, who has the specified <paramref name="key"/>.
         /// </summary>
-        /// <param name="warehouseType">The warehouse type to save.</param>
+        /// <param name="key">The primary key of the warehouse type.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>
+        /// The <see cref="Task"/> that represents the asynchronous operation, containing the warehouse type matching the specified <paramref name="key"/> if it exists.
+        /// </returns>
+        Task<WarehouseResult<TWarehouseType>> FindByIdAsync(TKey key, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Updates the specified <paramref name="warehouseType"/> in the backing store.
+        /// </summary>
+        /// <param name="warehouseType">The warehouse type to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> used to propagate notifications that the operation should be canceled.</param>
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
-        Task<WarehouseResult> SaveAsync(TWarehouseType warehouseType, CancellationToken cancellationToken);
+        Task<WarehouseResult> UpdateAsync(TWarehouseType warehouseType, CancellationToken cancellationToken);
     }
 }
