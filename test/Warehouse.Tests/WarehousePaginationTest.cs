@@ -1,16 +1,14 @@
 using System;
 using Xunit;
 
-namespace Compradon.Warehouse.Test
+namespace Compradon.Warehouse.Tests
 {
     public class WarehousePaginationTest
     {
         [Fact]
         public void Constructor_WithNullPageItems_ThrowsArgumentNullException()
         {
-            string[] items = null;
-
-            Action actual = () => new WarehousePagination<string>(items: items, count: 0, size: 10, page: 1);
+            Action actual = () => new WarehousePagination<string>(items: null, count: 0, size: 10, page: 1);
 
             Assert.Throws<ArgumentNullException>(actual);
         }

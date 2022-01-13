@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Compradon.Warehouse.Test
+namespace Compradon.Warehouse.Tests
 {
     public class WarehouseEntityTest
     {
