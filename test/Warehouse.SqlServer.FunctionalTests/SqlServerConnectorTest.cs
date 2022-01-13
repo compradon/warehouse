@@ -2,19 +2,19 @@ using System.Data;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Compradon.Warehouse.PostgreSQL.Test
+namespace Compradon.Warehouse.SqlServer.FunctionalTests
 {
-    public class PostgresConnectorTest
+    public class SqlServerConnectorTest
     {
-        public const string ConnectionString = "host=localhost;database=warehouse_tests;port=5432";
+        public const string ConnectionString = "Server=tcp:localhost,1433;Initial Catalog=warehouse_tests;User ID=sa;Password=Pa55w0rd;";
 
         public bool ConnectionSucceeded { get; } = false;
 
-        public PostgresConnectorTest()
+        public SqlServerConnectorTest()
         {
             try
             {
-                using var connector = new PostgresConnector(ConnectionString);
+                using var connector = new SqlServerConnector(ConnectionString);
                 using var connection = connector.CreateConnectionAsync().GetAwaiter().GetResult();
 
                 ConnectionSucceeded = connection.State == System.Data.ConnectionState.Open;
@@ -24,9 +24,9 @@ namespace Compradon.Warehouse.PostgreSQL.Test
 
         #region Helpers
 
-        public PostgresConnector CreatePostgresConnector()
+        public SqlServerConnector CreateSqlServerConnector()
         {
-            return new PostgresConnector(ConnectionString);
+            return new SqlServerConnector(ConnectionString);
         }
 
         #endregion
@@ -36,7 +36,7 @@ namespace Compradon.Warehouse.PostgreSQL.Test
         {
             Skip.IfNot(ConnectionSucceeded);
 
-            using var connector = new PostgresConnector(ConnectionString);
+            using var connector = new SqlServerConnector(ConnectionString);
             using var connection = await connector.CreateConnectionAsync();
 
             var expected = ConnectionState.Open;
@@ -50,7 +50,7 @@ namespace Compradon.Warehouse.PostgreSQL.Test
         {
             Skip.IfNot(ConnectionSucceeded);
 
-            using var connector = new PostgresConnector(ConnectionString);
+            using var connector = new SqlServerConnector(ConnectionString);
             using var connection = await connector.CreateConnectionAsync(true);
 
             var expected = ConnectionState.Open;
@@ -64,7 +64,7 @@ namespace Compradon.Warehouse.PostgreSQL.Test
         {
             Skip.IfNot(ConnectionSucceeded);
 
-            using var connector = new PostgresConnector(ConnectionString);
+            using var connector = new SqlServerConnector(ConnectionString);
             using var connection = await connector.CreateConnectionAsync(false);
 
             var expected = ConnectionState.Closed;
@@ -78,7 +78,7 @@ namespace Compradon.Warehouse.PostgreSQL.Test
         {
             Skip.IfNot(ConnectionSucceeded);
 
-            using var connector = new PostgresConnector(ConnectionString);
+            using var connector = new SqlServerConnector(ConnectionString);
 
             connector.Dispose();
         }
@@ -88,7 +88,7 @@ namespace Compradon.Warehouse.PostgreSQL.Test
         {
             Skip.IfNot(ConnectionSucceeded);
 
-            using var connector = new PostgresConnector(ConnectionString);
+            using var connector = new SqlServerConnector(ConnectionString);
 
             var c1 = await connector.CreateConnectionAsync(true);
             var c2 = await connector.CreateConnectionAsync(false);
@@ -101,7 +101,7 @@ namespace Compradon.Warehouse.PostgreSQL.Test
         {
             Skip.IfNot(ConnectionSucceeded);
 
-            using var connector = new PostgresConnector(ConnectionString);
+            using var connector = new SqlServerConnector(ConnectionString);
 
             connector.Dispose();
             connector.Dispose();
