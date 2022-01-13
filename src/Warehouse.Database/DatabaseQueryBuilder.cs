@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Compradon.Warehouse.Database
@@ -83,12 +82,22 @@ namespace Compradon.Warehouse.Database
             var parameter = Command.CreateParameter();
 
             parameter.ParameterName = name;
-            parameter.Value = value;
+            parameter.Value = value ?? DBNull.Value;
             parameter.Direction = direction ?? ParameterDirection.Input;
 
             if (type != null) parameter.DbType = type.Value;
             if (size != null) parameter.Size = size.Value;
 
+            Command.Parameters.Add(parameter);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified <see cref="DbParameter"/> to execute a command.
+        /// </summary>
+        public DatabaseQueryBuilder AddParameter(DbParameter parameter)
+        {
             Command.Parameters.Add(parameter);
 
             return this;
@@ -131,18 +140,18 @@ namespace Compradon.Warehouse.Database
         /// <summary>
         /// Executes an SQL statement and returns the number of rows affected.
         /// </summary>
-        public async Task<int> RunAsync()
+        public async Task<int> RunAsync(CancellationToken cancellationToken = default)
         {
-            return await Command.ExecuteNonQueryAsync();
+            return await Command.ExecuteNonQueryAsync(cancellationToken);
         }
 
         /// <summary>
         /// Executes the query and returns the first column of the first row in the result
         /// set returned by the query. All other columns and rows are ignored.
         /// </summary>
-        public async Task<T> RunAsync<T>()
+        public async Task<T> RunAsync<T>(CancellationToken cancellationToken = default)
         {
-            var value = await Command.ExecuteScalarAsync();
+            var value = await Command.ExecuteScalarAsync(cancellationToken);
 
             return (T)Convert.ChangeType(value, typeof(T));
         }
@@ -150,24 +159,9 @@ namespace Compradon.Warehouse.Database
         /// <summary>
         /// Executes the query against and returns an <see cref="DbDataReader"/>.
         /// </summary>
-        public async Task<DbDataReader> ExecuteAsync()
+        public async Task<DbDataReader> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             return await Command.ExecuteReaderAsync();
-        }
-
-        /// <summary>
-        /// Executes the query against and returns an <see cref="IAsyncEnumerable{T}"/>.
-        /// </summary>
-        public async IAsyncEnumerable<T> ExecuteAsync<T>()
-        {
-            var dataReader = await Command.ExecuteReaderAsync();
-
-            if (dataReader.FieldCount == 0) yield break;
-
-            while (await dataReader.ReadAsync())
-            {
-                yield return dataReader.Build<T>();
-            }
         }
 
         #endregion
