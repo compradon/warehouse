@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <RootNamespace>Compradon.Warehouse.Abstractions</RootNamespace>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>Compradon.Warehouse.Abstractions</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RootNamespace>Compradon.Warehouse</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>

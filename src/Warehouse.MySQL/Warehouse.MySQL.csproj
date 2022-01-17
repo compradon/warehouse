@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <RootNamespace>Compradon.Warehouse.MySQL</RootNamespace>
+    <AssemblyName>Compradon.Warehouse.MySQL</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyName>Compradon.Warehouse.MySQL</AssemblyName>
+    <RootNamespace>Compradon.Warehouse.MySQL</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -20,12 +20,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Scripts/build.sql" />
     <EmbeddedResource Include="Scripts/clear.sql" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
