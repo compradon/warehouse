@@ -111,9 +111,9 @@ namespace Compradon.Warehouse.Database
             return WarehouseResult.Success;
         }
 
-        private static async Task<string> GetScriptAsync(string fileName)
+        private async Task<string> GetScriptAsync(string fileName)
         {
-            var manifestEmbeddedProvider = new ManifestEmbeddedFileProvider(Assembly.GetExecutingAssembly());
+            var manifestEmbeddedProvider = new ManifestEmbeddedFileProvider(GetType().Assembly);
             var scriptFile = manifestEmbeddedProvider.GetFileInfo($"Scripts/{fileName}.sql");
 
             using var stream = new StreamReader(scriptFile.CreateReadStream());
