@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Warehouse\Warehouse.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.1" />
+  </ItemGroup>
+
 </Project>
