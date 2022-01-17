@@ -142,6 +142,7 @@ namespace Compradon.Warehouse.Database
         /// </summary>
         public async Task<int> RunAsync(CancellationToken cancellationToken = default)
         {
+            if (Connection.State == ConnectionState.Closed) await Connection.OpenAsync();
             return await Command.ExecuteNonQueryAsync(cancellationToken);
         }
 
