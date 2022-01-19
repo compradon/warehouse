@@ -8,7 +8,14 @@ namespace Compradon.Warehouse
     /// </summary>
     public class WarehouseType : WarehouseType<short>
     {
-
+        /// <summary>
+        /// Constructs a new instance of <see cref="WarehouseType"/>.
+        /// </summary>
+        public WarehouseType(string name, string alias)
+        {
+            Name = name;
+            Alias = alias;
+        }
     }
 
     /// <summary>
