@@ -1,7 +1,11 @@
 -- Licensed to the Compradon Inc. under one or more agreements.
 -- The Compradon Inc. licenses this file to you under the MIT license.
 
-DROP FUNCTION IF EXISTS warehouse.get_entity_type(entity_type_id SMALLINT);
+DROP FUNCTION IF EXISTS warehouse.create_or_update_entity_type(item JSONB);
+DROP FUNCTION IF EXISTS warehouse.find_entity_type_by_class(class VARCHAR(100));
+DROP FUNCTION IF EXISTS warehouse.find_entity_type_by_alias(alias VARCHAR(50));
+DROP FUNCTION IF EXISTS warehouse.find_entity_type_by_id(id SMALLINT);
+DROP FUNCTION IF EXISTS warehouse.get_entity_type(id SMALLINT);
 
 DROP TABLE IF EXISTS warehouse.value_entity;
 DROP TABLE IF EXISTS warehouse.value_dictionary;
@@ -21,5 +25,4 @@ DROP TABLE IF EXISTS warehouse.dictionary_match;
 DROP TABLE IF EXISTS warehouse.dictionary;
 DROP TABLE IF EXISTS warehouse.system;
 
-DROP TYPE IF EXISTS warehouse.value_types;
 DROP SCHEMA IF EXISTS warehouse;
