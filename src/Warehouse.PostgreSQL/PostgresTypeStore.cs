@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,9 @@ namespace Compradon.Warehouse.PostgreSQL
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
         public override async Task<WarehouseResult> CreateAsync(WarehouseType warehouseType, CancellationToken cancellationToken = default)
         {
+            if (warehouseType == null) throw new ArgumentNullException(nameof(warehouseType));
+            if (warehouseType.Key != 0) throw new ArgumentException(nameof(warehouseType.Key));
+
             using var connection = await Connector.CreateConnectionAsync();
 
             try
@@ -45,11 +49,11 @@ namespace Compradon.Warehouse.PostgreSQL
                 var json = JsonSerializer.Serialize(warehouseType);
                 
                 var query = connection
-                    .StoredProcedure("warehouse.create_entity_type");
+                    .StoredProcedure("warehouse.create_or_update_entity_type");
 
                 var parameter = query.Command.CreateParameter() as NpgsqlParameter;
 
-                parameter.ParameterName = "input";
+                parameter.ParameterName = "item";
                 parameter.NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Jsonb;
                 parameter.Value = json;
 
@@ -58,7 +62,11 @@ namespace Compradon.Warehouse.PostgreSQL
                     .ExecuteAsync(cancellationToken);
 
                 var _warehouseType = reader.Build<WarehouseType>();
-                warehouseType = _warehouseType;
+
+                warehouseType.Key = _warehouseType.Key;
+
+                foreach (var attribute in warehouseType.Attributes)
+                    attribute.Key = _warehouseType.Attributes.First(a => a.Alias == attribute.Alias).Key;
 
                 return WarehouseResult.Success;
             }
@@ -206,6 +214,9 @@ namespace Compradon.Warehouse.PostgreSQL
         /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="WarehouseResult"/> of the operation.</returns>
         public override async Task<WarehouseResult> UpdateAsync(WarehouseType warehouseType, CancellationToken cancellationToken = default)
         {
+            if (warehouseType == null) throw new ArgumentNullException(nameof(warehouseType));
+            if (warehouseType.Key == 0) throw new ArgumentException(nameof(warehouseType.Key));
+
             var connection = await Connector.CreateConnectionAsync();
 
             try
@@ -213,11 +224,11 @@ namespace Compradon.Warehouse.PostgreSQL
                 var json = JsonSerializer.Serialize(warehouseType);
                 
                 var query = connection
-                    .StoredProcedure("warehouse.update_entity_type");
+                    .StoredProcedure("warehouse.create_or_update_entity_type");
 
                 var parameter = query.Command.CreateParameter() as NpgsqlParameter;
 
-                parameter.ParameterName = "input";
+                parameter.ParameterName = "item";
                 parameter.NpgsqlDbType = NpgsqlTypes.NpgsqlDbType.Jsonb;
                 parameter.Value = json;
 
