@@ -6,7 +6,7 @@ namespace Compradon.Warehouse.PostgreSQL.FunctionalTests
 {
     public class PostgresConnectorTest
     {
-        public const string ConnectionString = "host=localhost;database=warehouse_tests;port=5432";
+        public const string ConnectionString = "host=localhost;port=5432";
 
         public bool ConnectionSucceeded { get; } = false;
 
