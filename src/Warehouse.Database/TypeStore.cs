@@ -7,9 +7,9 @@ namespace Compradon.Warehouse.Database
 {
     /// <summary>
     /// Represents a new instance of a persistence store for warehouse entity types, using the default implementation
-    /// of <see cref="ITypeStore{TWarehouseType, TKey}"/> with a <see cref="short" /> as a primary key.
+    /// of <see cref="ITypeStore{TWarehouseType, TKey}"/> with a <see cref="string" /> as a primary key.
     /// </summary>
-    public abstract class TypeStore : TypeStore<WarehouseType, short>
+    public abstract class TypeStore : TypeStore<WarehouseType, string>
     {
         /// <summary>
         /// Constructs a new instance of <see cref="TypeStore"/>.

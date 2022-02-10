@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace Compradon.Warehouse
 {
     /// <summary>
-    /// Provides an abstraction for a validating an entity type which uses a <see cref="short" /> as a primary key.
+    /// Provides an abstraction for a validating an entity type which uses a <see cref="string" /> as a primary key.
     /// </summary>
-    public interface ITypeValidator : ITypeValidator<WarehouseType, short>
+    public interface ITypeValidator : ITypeValidator<WarehouseType, string>
     {
 
     }

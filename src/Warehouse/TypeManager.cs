@@ -8,9 +8,9 @@ using Microsoft.Extensions.Options;
 namespace Compradon.Warehouse
 {
     /// <summary>
-    /// Provides the APIs for managing warehouse entity types which uses a <see cref="short" /> as a primary key in a persistence store.
+    /// Provides the APIs for managing warehouse entity types which uses a <see cref="string" /> as a primary key in a persistence store.
     /// </summary>
-    public class TypeManager : TypeManager<WarehouseType, short>
+    public class TypeManager : TypeManager<WarehouseType, string>
     {
         #region Constructors
 

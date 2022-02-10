@@ -4,22 +4,22 @@ using System.Text.Json.Serialization;
 namespace Compradon.Warehouse
 {
     /// <summary>
-    /// Provides the type of entity which uses a <see cref="short" /> as a primary key in the warehouse system.
+    /// Provides the type of stock keeping unit which uses a <see cref="string" /> as a primary key in the warehouse system.
     /// </summary>
-    public class WarehouseType : WarehouseType<short>
+    public class WarehouseType : WarehouseType<string>
     {
         /// <summary>
         /// Constructs a new instance of <see cref="WarehouseType"/>.
         /// </summary>
-        public WarehouseType(string name, string alias)
+        public WarehouseType(string name, string key)
         {
             Name = name;
-            Alias = alias;
+            Key = key;
         }
     }
 
     /// <summary>
-    /// Provides the type of entity in the warehouse system.
+    /// Provides the type of stock keeping unit in the warehouse system.
     /// </summary>
     /// <typeparam name="TKey">The type used for the primary key for the entity type.</typeparam>
     public class WarehouseType<TKey>
@@ -30,31 +30,25 @@ namespace Compradon.Warehouse
         /// <summary>
         /// Gets the primary key of the entity.
         /// </summary>
-        [JsonPropertyName("entity_type_id")]
+        [JsonPropertyName("sku")]
         public TKey Key { get; set; }
 
         /// <summary>
-        /// Gets or sets the unique alias of the entity type.
+        /// Gets or sets the program class name of the entity type.
         /// </summary>
-        [JsonPropertyName("alias")]
-        public string Alias { get; set; }
+        [JsonPropertyName("program_class")]
+        public string Class { get; set; }
 
         /// <summary>
         /// Gets or sets the display name of the entity type.
         /// </summary>
-        [JsonPropertyName("name")]
+        [JsonPropertyName("unit_name")]
         public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets the class name of the entity type.
-        /// </summary>
-        [JsonPropertyName("class")]
-        public string Class { get; set; }
 
         /// <summary>
         /// Gets or sets the summary of the entity type.
         /// </summary>
-        [JsonPropertyName("summary")]
+        [JsonPropertyName("unit_summary")]
         public string Summary { get; set; }
 
         /// <summary>
@@ -70,7 +64,7 @@ namespace Compradon.Warehouse
         public bool Privated { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets the atttributes of the entity type.
         /// </summary>
         [JsonPropertyName("attributes")]
         public AttributeCollection Attributes { get; set; } = new AttributeCollection();

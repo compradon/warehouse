@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace Compradon.Warehouse
 {
     /// <summary>
-    /// Provides an abstraction for a storage and management of warehouse types which uses a <see cref="short" /> as a primary key.
+    /// Provides an abstraction for a storage and management of warehouse types which uses a <see cref="string" /> as a primary key.
     /// </summary>
-    public interface ITypeStore : ITypeStore<WarehouseType, short>
+    public interface ITypeStore : ITypeStore<WarehouseType, string>
     {
 
     }
