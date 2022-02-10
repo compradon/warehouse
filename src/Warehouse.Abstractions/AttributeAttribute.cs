@@ -1,41 +1,43 @@
+// Licensed to the Compradon Inc. under one or more agreements.
+// The Compradon Inc. licenses this file to you under the MIT license.
+
 using System;
 
-namespace Compradon.Warehouse
+namespace Compradon.Warehouse;
+
+/// <summary>
+/// Associates a property or field with a specific attribute of the warehouse entity.
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public sealed class AttributeAttribute : Attribute
 {
+    #region Properties
+
     /// <summary>
-    /// Associates a property or field with a specific attribute of the warehouse entity.
+    /// Gets the unique alias of the entity attribute.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    public sealed class AttributeAttribute : Attribute
+    public string Alias { get; set; }
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AttributeAttribute"/> class.
+    /// </summary>
+    public AttributeAttribute()
     {
-        #region Properties
 
-        /// <summary>
-        /// Gets the unique alias of the entity attribute.
-        /// </summary>
-        public string Alias { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AttributeAttribute"/> class.
-        /// </summary>
-        public AttributeAttribute()
-        {
-
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AttributeAttribute"/> class.
-        /// </summary>
-        /// <param name="alias">The unique alias of the entity attribute.</param>
-        public AttributeAttribute(string alias)
-        {
-            Alias = alias;
-        }
-
-        #endregion
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AttributeAttribute"/> class.
+    /// </summary>
+    /// <param name="alias">The unique alias of the entity attribute.</param>
+    public AttributeAttribute(string alias)
+    {
+        Alias = alias;
+    }
+
+    #endregion
 }

@@ -1,20 +1,22 @@
-namespace Compradon.Warehouse
+// Licensed to the Compradon Inc. under one or more agreements.
+// The Compradon Inc. licenses this file to you under the MIT license.
+
+namespace Compradon.Warehouse;
+
+/// <summary>
+/// Service to enable localization for application facing warehouse errors.
+/// </summary>
+/// <remarks>
+/// These errors are returned to controllers and are generally used as display messages to end users.
+/// </remarks>
+public class WarehouseErrorDescriber
 {
     /// <summary>
-    /// Service to enable localization for application facing warehouse errors.
+    /// Returns the default <see cref="WarehouseError"/>.
     /// </summary>
-    /// <remarks>
-    /// These errors are returned to controllers and are generally used as display messages to end users.
-    /// </remarks>
-    public class WarehouseErrorDescriber
+    /// <returns>The default <see cref="WarehouseError"/>.</returns>
+    public virtual WarehouseError DefaultError()
     {
-        /// <summary>
-        /// Returns the default <see cref="WarehouseError"/>.
-        /// </summary>
-        /// <returns>The default <see cref="WarehouseError"/>.</returns>
-        public virtual WarehouseError DefaultError()
-        {
-            return new WarehouseError(nameof(DefaultError), nameof(DefaultError));
-        }
+        return new WarehouseError(nameof(DefaultError), nameof(DefaultError));
     }
 }

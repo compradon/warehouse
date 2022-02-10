@@ -1,170 +1,172 @@
+// Licensed to the Compradon Inc. under one or more agreements.
+// The Compradon Inc. licenses this file to you under the MIT license.
+
 using System;
 using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Compradon.Warehouse.Database
+namespace Compradon.Warehouse.Database;
+
+/// <summary>
+/// Helper for building and executing database queries. This class cannot be inherited.
+/// </summary>
+public sealed class DatabaseQueryBuilder
 {
+    #region Properties
+
     /// <summary>
-    /// Helper for building and executing database queries. This class cannot be inherited.
+    /// The <see cref="DbCommand"/> to execute against a data source.
     /// </summary>
-    public sealed class DatabaseQueryBuilder
+    public DbCommand Command { get; }
+
+    /// <summary>
+    /// The <see cref="DbConnection"/> to a database.
+    /// </summary>
+    public DbConnection Connection { get; }
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Constructs a new instance of <see cref="DatabaseQueryBuilder"/>.
+    /// </summary>
+    /// <param name="connection">The connection to the data source.</param>
+    /// <param name="commandText">The text command to run against the data source.</param>
+    /// <param name="commandType">Specifies how a command string is interpreted.</param>
+    public DatabaseQueryBuilder(IDbConnection connection, string commandText, CommandType commandType = CommandType.Text)
     {
-        #region Properties
+        if (connection == null) throw new ArgumentNullException(nameof(connection));
+        if (commandText == null) throw new ArgumentNullException(nameof(commandText));
 
-        /// <summary>
-        /// The <see cref="DbCommand"/> to execute against a data source.
-        /// </summary>
-        public DbCommand Command { get; }
+        Command = CreateCommand(connection);
+        Connection = CreateConnection(connection);
 
-        /// <summary>
-        /// The <see cref="DbConnection"/> to a database.
-        /// </summary>
-        public DbConnection Connection { get; }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Constructs a new instance of <see cref="DatabaseQueryBuilder"/>.
-        /// </summary>
-        /// <param name="connection">The connection to the data source.</param>
-        /// <param name="commandText">The text command to run against the data source.</param>
-        /// <param name="commandType">Specifies how a command string is interpreted.</param>
-        public DatabaseQueryBuilder(IDbConnection connection, string commandText, CommandType commandType = CommandType.Text)
-        {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (commandText == null) throw new ArgumentNullException(nameof(commandText));
-
-            Command = CreateCommand(connection);
-            Connection = CreateConnection(connection);
-
-            Command.CommandText = commandText;
-            Command.CommandType = commandType;
-        }
-
-        #endregion
-
-        #region Helpers
-
-        private static DbCommand CreateCommand(IDbConnection connection)
-        {
-            if (connection.CreateCommand() is DbCommand command) return command;
-
-            throw new InvalidOperationException();
-        }
-
-        private static DbConnection CreateConnection(IDbConnection connection)
-        {
-            if (connection is DbConnection _connection) return _connection;
-
-            throw new InvalidOperationException();
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// Adds parameter to execute a command.
-        /// </summary>
-        /// <param name="name">The name of the parameter.</param>
-        /// <param name="value">The value of the parameter.</param>
-        /// <param name="type">The type of the parameter.</param>
-        /// <param name="size">The size of the parameter.</param>
-        /// <param name="direction">The direction type of the parameter.</param>
-        public DatabaseQueryBuilder AddParameter(string name, object value = null, DbType? type = null, int? size = null, ParameterDirection? direction = null)
-        {
-            if (name == null) throw new ArgumentNullException(nameof(name));
-
-            var parameter = Command.CreateParameter();
-
-            parameter.ParameterName = name;
-            parameter.Value = value ?? DBNull.Value;
-            parameter.Direction = direction ?? ParameterDirection.Input;
-
-            if (type != null) parameter.DbType = type.Value;
-            if (size != null) parameter.Size = size.Value;
-
-            Command.Parameters.Add(parameter);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds the specified <see cref="DbParameter"/> to execute a command.
-        /// </summary>
-        public DatabaseQueryBuilder AddParameter(DbParameter parameter)
-        {
-            Command.Parameters.Add(parameter);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds dynamic parameters to execute a command.
-        /// </summary>
-        /// <param name="parameters">The parameters.</param>
-        public DatabaseQueryBuilder Parameters(object parameters)
-        {
-            foreach (var property in parameters.GetType().GetProperties())
-            {
-                AddParameter(property.Name, property.GetValue(parameters));
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the wait time before terminating the attempt to execute a command and generating an error.
-        /// </summary>
-        public DatabaseQueryBuilder Timeout(int commandTimeout)
-        {
-            Command.CommandTimeout = commandTimeout;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the transaction with in which this query executes.
-        /// </summary>
-        public DatabaseQueryBuilder Transaction(DbTransaction transaction)
-        {
-            Command.Transaction = transaction;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Executes an SQL statement and returns the number of rows affected.
-        /// </summary>
-        public async Task<int> RunAsync(CancellationToken cancellationToken = default)
-        {
-            if (Connection.State == ConnectionState.Closed) await Connection.OpenAsync();
-            return await Command.ExecuteNonQueryAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// Executes the query and returns the first column of the first row in the result
-        /// set returned by the query. All other columns and rows are ignored.
-        /// </summary>
-        public async Task<T> RunAsync<T>(CancellationToken cancellationToken = default)
-        {
-            var value = await Command.ExecuteScalarAsync(cancellationToken);
-
-            return (T)Convert.ChangeType(value, typeof(T));
-        }
-
-        /// <summary>
-        /// Executes the query against and returns an <see cref="DbDataReader"/>.
-        /// </summary>
-        public async Task<DbDataReader> ExecuteAsync(CancellationToken cancellationToken = default)
-        {
-            return await Command.ExecuteReaderAsync();
-        }
-
-        #endregion
+        Command.CommandText = commandText;
+        Command.CommandType = commandType;
     }
+
+    #endregion
+
+    #region Helpers
+
+    private static DbCommand CreateCommand(IDbConnection connection)
+    {
+        if (connection.CreateCommand() is DbCommand command) return command;
+
+        throw new InvalidOperationException();
+    }
+
+    private static DbConnection CreateConnection(IDbConnection connection)
+    {
+        if (connection is DbConnection _connection) return _connection;
+
+        throw new InvalidOperationException();
+    }
+
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    /// Adds parameter to execute a command.
+    /// </summary>
+    /// <param name="name">The name of the parameter.</param>
+    /// <param name="value">The value of the parameter.</param>
+    /// <param name="type">The type of the parameter.</param>
+    /// <param name="size">The size of the parameter.</param>
+    /// <param name="direction">The direction type of the parameter.</param>
+    public DatabaseQueryBuilder AddParameter(string name, object value = null, DbType? type = null, int? size = null, ParameterDirection? direction = null)
+    {
+        if (name == null) throw new ArgumentNullException(nameof(name));
+
+        var parameter = Command.CreateParameter();
+
+        parameter.ParameterName = name;
+        parameter.Value = value ?? DBNull.Value;
+        parameter.Direction = direction ?? ParameterDirection.Input;
+
+        if (type != null) parameter.DbType = type.Value;
+        if (size != null) parameter.Size = size.Value;
+
+        Command.Parameters.Add(parameter);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Adds the specified <see cref="DbParameter"/> to execute a command.
+    /// </summary>
+    public DatabaseQueryBuilder AddParameter(DbParameter parameter)
+    {
+        Command.Parameters.Add(parameter);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Adds dynamic parameters to execute a command.
+    /// </summary>
+    /// <param name="parameters">The parameters.</param>
+    public DatabaseQueryBuilder Parameters(object parameters)
+    {
+        foreach (var property in parameters.GetType().GetProperties())
+        {
+            AddParameter(property.Name, property.GetValue(parameters));
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the wait time before terminating the attempt to execute a command and generating an error.
+    /// </summary>
+    public DatabaseQueryBuilder Timeout(int commandTimeout)
+    {
+        Command.CommandTimeout = commandTimeout;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the transaction with in which this query executes.
+    /// </summary>
+    public DatabaseQueryBuilder Transaction(DbTransaction transaction)
+    {
+        Command.Transaction = transaction;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes an SQL statement and returns the number of rows affected.
+    /// </summary>
+    public async Task<int> RunAsync(CancellationToken cancellationToken = default)
+    {
+        if (Connection.State == ConnectionState.Closed) await Connection.OpenAsync();
+        return await Command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Executes the query and returns the first column of the first row in the result
+    /// set returned by the query. All other columns and rows are ignored.
+    /// </summary>
+    public async Task<T> RunAsync<T>(CancellationToken cancellationToken = default)
+    {
+        var value = await Command.ExecuteScalarAsync(cancellationToken);
+
+        return (T)Convert.ChangeType(value, typeof(T));
+    }
+
+    /// <summary>
+    /// Executes the query against and returns an <see cref="DbDataReader"/>.
+    /// </summary>
+    public async Task<DbDataReader> ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        return await Command.ExecuteReaderAsync();
+    }
+
+    #endregion
 }

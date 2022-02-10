@@ -1,47 +1,49 @@
-namespace Compradon.Warehouse
+// Licensed to the Compradon Inc. under one or more agreements.
+// The Compradon Inc. licenses this file to you under the MIT license.
+
+namespace Compradon.Warehouse;
+
+/// <summary>
+/// Encapsulates an error from the warehouse subsystem.
+/// </summary>
+public class WarehouseError
 {
+    #region Properties
+
     /// <summary>
-    /// Encapsulates an error from the warehouse subsystem.
+    /// Gets the code for this error.
     /// </summary>
-    public class WarehouseError
+    /// <value>The code for this error.</value>
+    public string Code { get; }
+
+    /// <summary>
+    /// Gets the description for this error.
+    /// </summary>
+    /// <value>The description for this error.</value>
+    public string Description { get; }
+
+    #endregion
+
+    #region Constructors
+
+    /// <summary>
+    /// Constructs a new instance of <see cref="WarehouseError"/>.
+    /// </summary>
+    /// <param name="description">The description for this error.</param>
+    public WarehouseError(string description)
     {
-        #region Properties
-
-        /// <summary>
-        /// Gets the code for this error.
-        /// </summary>
-        /// <value>The code for this error.</value>
-        public string Code { get; }
-
-        /// <summary>
-        /// Gets the description for this error.
-        /// </summary>
-        /// <value>The description for this error.</value>
-        public string Description { get; }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Constructs a new instance of <see cref="WarehouseError"/>.
-        /// </summary>
-        /// <param name="description">The description for this error.</param>
-        public WarehouseError(string description)
-        {
-            Description = description;
-        }
-
-        /// <summary>
-        /// Constructs a new instance of <see cref="WarehouseError"/>.
-        /// </summary>
-        /// <param name="code">The code for this error.</param>
-        /// <param name="description">The description for this error.</param>
-        public WarehouseError(string code, string description) : this (description)
-        {
-            Code = code;
-        }
-
-        #endregion
+        Description = description;
     }
+
+    /// <summary>
+    /// Constructs a new instance of <see cref="WarehouseError"/>.
+    /// </summary>
+    /// <param name="code">The code for this error.</param>
+    /// <param name="description">The description for this error.</param>
+    public WarehouseError(string code, string description) : this (description)
+    {
+        Code = code;
+    }
+
+    #endregion
 }

@@ -1,19 +1,21 @@
+// Licensed to the Compradon Inc. under one or more agreements.
+// The Compradon Inc. licenses this file to you under the MIT license.
+
 using System;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace Compradon.Warehouse.Database
+namespace Compradon.Warehouse.Database;
+
+/// <summary>
+/// Provides an abstraction service for connecting to the warehouse database.
+/// </summary>
+public interface IDatabaseConnector : IDisposable
 {
     /// <summary>
-    /// Provides an abstraction service for connecting to the warehouse database.
+    /// Creates a database connection as an asynchronous operation.
     /// </summary>
-    public interface IDatabaseConnector : IDisposable
-    {
-        /// <summary>
-        /// Creates a database connection as an asynchronous operation.
-        /// </summary>
-        /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
-        /// <param name="open">Indicates the need to immediately open a connection to the database.</param>
-        Task<IDbConnection> CreateConnectionAsync(bool open = true);
-    }
+    /// <returns>The <see cref="Task"/> that represents the asynchronous operation, containing the <see cref="IDbConnection"/> of the creation operation.</returns>
+    /// <param name="open">Indicates the need to immediately open a connection to the database.</param>
+    Task<IDbConnection> CreateConnectionAsync(bool open = true);
 }
